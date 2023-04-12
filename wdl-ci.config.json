@@ -19,7 +19,7 @@
       "tasks": {
         "bcftools_stats": {
           "key": "bcftools_stats",
-          "digest": "quwu42m27nhkimczr6ewtrcnfy3qinfx",
+          "digest": "",
           "tests": [
             {
               "inputs": {
