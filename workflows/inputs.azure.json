@@ -1,0 +1,25 @@
+{
+  "de_novo_assembly.cohort": {
+    "cohort_id": "String",
+    "samples": [
+      {
+        "sample_id": "String",
+        "movie_bams": "Array[File]",
+        "sex": "String?",
+        "father_id": "String?",
+        "mother_id": "String?",
+        "run_de_novo_assembly": "Boolean"
+      }
+    ],
+    "run_de_novo_assembly_trio": "Boolean"
+  },
+  "de_novo_assembly.reference": {
+    "name": "GRCh38",
+    "fasta": {
+      "data": "/datasetpbrarediseases/dataset/GRCh38/human_GRCh38_no_alt_analysis_set.fasta",
+      "data_index": "/datasetpbrarediseases/dataset/GRCh38/human_GRCh38_no_alt_analysis_set.fasta.fai"
+    }
+  },
+  "de_novo_assembly.backend": "Azure",
+  "de_novo_assembly.preemptible": "Boolean"
+}
