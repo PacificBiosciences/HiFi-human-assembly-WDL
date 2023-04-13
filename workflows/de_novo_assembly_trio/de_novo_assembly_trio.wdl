@@ -133,8 +133,8 @@ task parse_families {
 
 	runtime {
 		docker: "~{runtime_attributes.container_registry}/parse-cohort@sha256:94444e7e3fd151936c9bbcb8a64b6a5e7d8c59de53b256a83f15c4ea203977b4"
-		cpu: 1
-		memory: "1 GB"
+		cpu: 2
+		memory: "4 GB"
 		disk: "20 GB"
 		disks: "local-disk " + "20" + " HDD"
 		preemptible: runtime_attributes.preemptible_tries
