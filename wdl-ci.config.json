@@ -115,7 +115,7 @@
       "tasks": {
         "parse_families": {
           "key": "parse_families",
-          "digest": "lox76ajk5hjyfziqejsqc4j5deghpmd4",
+          "digest": "fczc72mlu6iw3glecpbme5jj4ceqyqtw",
           "tests": [
             {
               "inputs": {
