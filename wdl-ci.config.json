@@ -1,0 +1,364 @@
+{
+  "workflows": {
+    "workflows/main.wdl": {
+      "key": "workflows/main.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {}
+    },
+    "workflows/wdl-common/wdl/structs.wdl": {
+      "key": "workflows/wdl-common/wdl/structs.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {}
+    },
+    "workflows/wdl-common/wdl/tasks/bcftools_stats.wdl": {
+      "key": "workflows/wdl-common/wdl/tasks/bcftools_stats.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "bcftools_stats": {
+          "key": "bcftools_stats",
+          "digest": "quwu42m27nhkimczr6ewtrcnfy3qinfx",
+          "tests": [
+            {
+              "inputs": {
+                "vcf": "${resources_file_path}/HG005.GRCh38.deepvariant.vcf.gz",
+                "params": "--apply-filters PASS --samples ${sample_id}",
+                "reference": "${datasets_file_path}/GRCh38/human_GRCh38_no_alt_analysis_set.fasta",
+                "runtime_attributes": "${default_runtime_attributes}"
+              },
+              "output_tests": {
+                "stats": {
+                  "value": "${resources_file_path}/HG005.GRCh38.deepvariant.vcf.stats.txt",
+                  "test_tasks": [
+                    "compare_file_basename",
+                    "check_empty_lines"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "workflows/wdl-common/wdl/tasks/zip_index_vcf.wdl": {
+      "key": "workflows/wdl-common/wdl/tasks/zip_index_vcf.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "zip_index_vcf": {
+          "key": "zip_index_vcf",
+          "digest": "k2rylyp4cjkou3cs7rt7a6wvqv2w473c",
+          "tests": [
+            {
+              "inputs": {
+                "vcf": "${resources_file_path}/HG005.GRCh38.pbsv.vcf",
+                "runtime_attributes": "${default_runtime_attributes}"
+              },
+              "output_tests": {
+                "zipped_vcf": {
+                  "value": "${resources_file_path}/HG005.GRCh38.pbsv.vcf.gz",
+                  "test_tasks": [
+                    "calculate_md5sum",
+                    "compare_file_basename",
+                    "vcftools_validator",
+                    "check_gzip"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "workflows/wdl-common/wdl/tasks/samtools_fasta.wdl": {
+      "key": "workflows/wdl-common/wdl/tasks/samtools_fasta.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "samtools_fasta": {
+          "key": "samtools_fasta",
+          "digest": "sqhivuuxyexfmppftl7ezsx6se3qfkcy",
+          "tests": [
+            {
+              "inputs": {
+                "bam": "${input_file_path}/small_HG005/m64017_200723_190224.hifi_reads.bam",
+                "runtime_attributes": "${default_runtime_attributes}"
+              },
+              "output_tests": {
+                "reads_fasta": {
+                  "value": "${resources_file_path}/m64017_200723_190224.hifi_reads.fasta",
+                  "test_tasks": [
+                    "calculate_md5sum",
+                    "compare_file_basename",
+                    "check_empty_lines",
+                    "fasta_validator"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "workflows/wdl-common/wdl/workflows/backend_configuration/backend_configuration.wdl": {
+      "key": "workflows/wdl-common/wdl/workflows/backend_configuration/backend_configuration.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {}
+    },
+    "workflows/de_novo_assembly_trio/de_novo_assembly_trio.wdl": {
+      "key": "workflows/de_novo_assembly_trio/de_novo_assembly_trio.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "parse_families": {
+          "key": "parse_families",
+          "digest": "lox76ajk5hjyfziqejsqc4j5deghpmd4",
+          "tests": [
+            {
+              "inputs": {
+                "cohort_json": "${resources_file_path}/cohort.json",
+                "runtime_attributes": "${default_runtime_attributes}"
+              },
+              "output_tests": {
+                "families_json": {
+                  "value": "${resources_file_path}/families.json",
+                  "test_tasks": [
+                    "calculate_md5sum",
+                    "compare_file_basename",
+                    "check_json"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "yak_count": {
+          "key": "yak_count",
+          "digest": "32uc62rlhwfjfatcb4qfpr44ohg2wdlb",
+          "tests": [
+            {
+              "inputs": {
+                "sample_id": "HG007",
+                "reads_fastas": [
+                  "${resources_file_path}/m64017_191216_194629.hifi_reads.fasta",
+                  "${resources_file_path}/m64017_191218_164535.hifi_reads.fasta",
+                  "${resources_file_path}/m64017_191219_225837.hifi_reads.fasta",
+                  "${resources_file_path}/m64017_191221_052416.hifi_reads.fasta",
+                  "${resources_file_path}/m64017_200108_232219.hifi_reads.fasta",
+                  "${resources_file_path}/m64017_200112_090459.hifi_reads.fasta"
+                ],
+                "runtime_attributes": "${default_runtime_attributes}"
+              },
+              "output_tests": {
+                "yak": {
+                  "value": "${resources_file_path}/HG007.yak",
+                  "test_tasks": [
+                    "calculate_md5sum",
+                    "compare_file_basename"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "workflows/assemble_genome/assemble_genome.wdl": {
+      "key": "workflows/assemble_genome/assemble_genome.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "hifiasm_assemble": {
+          "key": "hifiasm_assemble",
+          "digest": "r4ikydzmdaed4hzsmc3t7efh6mz5e4mx",
+          "tests": [
+            {
+              "inputs": {
+                "sample_id": "HG005",
+                "reads_fastas": [
+                  "${resources_file_path}/m64017_200723_190224.hifi_reads.fasta",
+                  "${resources_file_path}/m64017_200730_190124.hifi_reads.fasta",
+                  "${resources_file_path}/m64017_200801_011415.hifi_reads.fasta",
+                  "${resources_file_path}/m64017_200802_073944.hifi_reads.fasta",
+                  "${resources_file_path}/m64109_200304_195708.hifi_reads.fasta",
+                  "${resources_file_path}/m64109_200309_192110.hifi_reads.fasta",
+                  "${resources_file_path}/m64109_200311_013444.hifi_reads.fasta"
+                ],
+                "runtime_attributes": "${on_demand_runtime_attributes}"
+              },
+              "output_tests": {
+                "assembly_hap_gfas": {
+                  "value": [
+                    "${resources_file_path}/HG005.asm.bp.hap1.p_ctg.gfa",
+                    "${resources_file_path}/HG005.asm.bp.hap2.p_ctg.gfa"
+                  ],
+                  "test_tasks": [
+                    "calculate_md5sum_array",
+                    "compare_file_basename_array",
+                    "check_empty_lines_array"
+                  ]
+                },
+                "assembly_noseq_gfas": {
+                  "value": [
+                    "${resources_file_path}/HG005.asm.bp.hap1.p_ctg.noseq.gfa",
+                    "${resources_file_path}/HG005.asm.bp.hap2.p_ctg.noseq.gfa"
+                  ],
+                  "test_tasks": [
+                    "calculate_md5sum_array",
+                    "compare_file_basename_array",
+                    "check_empty_lines_array"
+                  ]
+                },
+                "assembly_lowQ_beds": {
+                  "value": [
+                    "${resources_file_path}/HG005.asm.bp.hap1.p_ctg.lowQ.bed",
+                    "${resources_file_path}/HG005.asm.bp.hap2.p_ctg.lowQ.bed"
+                  ],
+                  "test_tasks": [
+                    "calculate_md5sum_array",
+                    "compare_file_basename_array",
+                    "check_tab_delimited_array",
+                    "count_columns_array"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "gfa2fa": {
+          "key": "gfa2fa",
+          "digest": "liyb2m4cbkovxctcgaxwunqkn5az77ev",
+          "tests": [
+            {
+              "inputs": {
+                "gfa": "${resources_file_path}/HG005.asm.bp.hap1.p_ctg.gfa",
+                "reference_index": "${datasets_file_path}/GRCh38/human_GRCh38_no_alt_analysis_set.fasta.fai",
+                "runtime_attributes": "${default_runtime_attributes}"
+              },
+              "output_tests": {
+                "zipped_fasta": {
+                  "value": "${resources_file_path}/HG005.asm.bp.hap1.p_ctg.fasta.gz",
+                  "test_tasks": [
+                    "compare_file_basename",
+                    "check_gzip",
+                    "check_empty_lines",
+                    "fasta_validator"
+                  ]
+                },
+                "assembly_stats": {
+                  "value": "${resources_file_path}/HG005.asm.bp.hap1.p_ctg.fasta.stats.txt",
+                  "test_tasks": [
+                    "compare_file_basename",
+                    "check_tab_delimited",
+                    "check_empty_lines"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "align_hifiasm": {
+          "key": "align_hifiasm",
+          "digest": "uozjfq66ztyonrplvlkdc45lxt3d2ilj",
+          "tests": [
+            {
+              "inputs": {
+                "sample_id": "HG005",
+                "query_sequences": [
+                  "${resources_file_path}/HG005.asm.bp.hap1.p_ctg.fasta.gz",
+                  "${resources_file_path}/HG005.asm.bp.hap2.p_ctg.fasta.gz"
+                ],
+                "reference": "${datasets_file_path}/GRCh38/human_GRCh38_no_alt_analysis_set.fasta",
+                "reference_name": "GRCh38",
+                "runtime_attributes": "${default_runtime_attributes}"
+              },
+              "output_tests": {
+                "asm_bam": {
+                  "value": "${resources_file_path}/HG005.asm.GRCh38.bam",
+                  "test_tasks": [
+                    "compare_file_basename",
+                    "samtools_quickcheck",
+                    "check_coordinate_sorted_alignment"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "workflows/de_novo_assembly_sample/de_novo_assembly_sample.wdl": {
+      "key": "workflows/de_novo_assembly_sample/de_novo_assembly_sample.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "htsbox": {
+          "key": "htsbox",
+          "digest": "hgv6puzttllbwzgmunnigqiopcq3gl7x",
+          "tests": [
+            {
+              "inputs": {
+                "bam": "${resources_file_path}/HG005.asm.GRCh38.bam",
+                "bam_index": "${resources_file_path}/HG005.asm.GRCh38.bam.bai",
+                "reference": "${datasets_file_path}/GRCh38/human_GRCh38_no_alt_analysis_set.fasta",
+                "runtime_attributes": "${default_runtime_attributes}"
+              },
+              "output_tests": {
+                "htsbox_vcf": {
+                  "value": "${resources_file_path}/HG005.asm.GRCh38.htsbox.vcf",
+                  "test_tasks": [
+                    "compare_file_basename",
+                    "vcftools_validator"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "workflows/assembly_structs.wdl": {
+      "key": "workflows/assembly_structs.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {}
+    }
+  },
+  "engines": {
+    "f1ed5b40-6a26-4eac-a2b8-9960516e4164": {
+      "key": "f1ed5b40-6a26-4eac-a2b8-9960516e4164",
+      "enabled": true,
+      "name": "PacBio CoA installation"
+    }
+  },
+  "test_params": {
+    "global_params": {
+      "sample_id": "HG005",
+      "reference_name": "GRCh38",
+      "default_runtime_attributes": {
+        "preemptible_tries": 3,
+        "max_retries": 3,
+        "zones": "",
+        "queue_arn": "",
+        "container_registry": "quay.io/pacbio"
+      },
+      "on_demand_runtime_attributes": {
+        "preemptible_tries": 0,
+        "max_retries": 0,
+        "zones": "",
+        "queue_arn": "",
+        "container_registry": "quay.io/pacbio"
+      }
+    },
+    "engine_params": {
+      "f1ed5b40-6a26-4eac-a2b8-9960516e4164": {
+        "input_file_path": "/coac74908838b5dd7/inputs/small_dataset/chr6.p23",
+        "resources_file_path": "/coac74908838b5dd7/inputs/wdl-ci/humanwgs",
+        "datasets_file_path": "/datasetpbrarediseases/dataset"
+      }
+    }
+  }
+}
