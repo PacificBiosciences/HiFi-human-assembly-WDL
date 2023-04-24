@@ -196,9 +196,9 @@
                     "${resources_file_path}/HG005.asm.bp.hap2.p_ctg.gfa"
                   ],
                   "test_tasks": [
-                    "calculate_md5sum_array",
-                    "compare_file_basename_array",
-                    "check_empty_lines_array"
+                    "calculate_md5sum",
+                    "compare_file_basename",
+                    "check_empty_lines"
                   ]
                 },
                 "assembly_noseq_gfas": {
@@ -207,9 +207,9 @@
                     "${resources_file_path}/HG005.asm.bp.hap2.p_ctg.noseq.gfa"
                   ],
                   "test_tasks": [
-                    "calculate_md5sum_array",
-                    "compare_file_basename_array",
-                    "check_empty_lines_array"
+                    "calculate_md5sum",
+                    "compare_file_basename",
+                    "check_empty_lines"
                   ]
                 },
                 "assembly_lowQ_beds": {
@@ -218,10 +218,10 @@
                     "${resources_file_path}/HG005.asm.bp.hap2.p_ctg.lowQ.bed"
                   ],
                   "test_tasks": [
-                    "calculate_md5sum_array",
-                    "compare_file_basename_array",
-                    "check_tab_delimited_array",
-                    "count_columns_array"
+                    "calculate_md5sum",
+                    "compare_file_basename",
+                    "check_tab_delimited",
+                    "count_columns"
                   ]
                 }
               }
