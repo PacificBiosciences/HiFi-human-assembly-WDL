@@ -226,7 +226,7 @@ task align_hifiasm {
 	runtime {
 		docker: "~{runtime_attributes.container_registry}/align_hifiasm@sha256:3968cb152a65163005ffed46297127536701ec5af4c44e8f3e7051f7b01f80fe"
 		cpu: threads
-		memory: "256 GB"
+		memory: "128 GB"
 		disk: disk_size + " GB"
 		disks: "local-disk " + disk_size + " HDD"
 		preemptible: runtime_attributes.preemptible_tries
