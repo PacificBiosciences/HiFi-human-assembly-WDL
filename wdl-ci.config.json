@@ -297,7 +297,7 @@
       "tasks": {
         "htsbox": {
           "key": "htsbox",
-          "digest": "hgv6puzttllbwzgmunnigqiopcq3gl7x",
+          "digest": "wzaxerbnwe327lejeyudsposw4ywor7t",
           "tests": [
             {
               "inputs": {
