@@ -98,6 +98,8 @@ task htsbox {
 		# Ensure the sample is named based on the bam basename (not the full path)
 		cp ~{bam} .
 
+		htsbox 2>&1 | grep -Eo 'Version: htslib [0-9a-z-]+, htsbox [0-9a-z-]+'
+
 		htsbox pileup \
 			-q20 \
 			-c \

@@ -93,6 +93,8 @@ task hifiasm_assemble {
 	command <<<
 		set -euo pipefail
 
+		echo "hifiasm version: " $(hifiasm --version)
+
 		hifiasm \
 			-o ~{prefix} \
 			-t ~{threads} \
@@ -144,15 +146,21 @@ task gfa2fa {
 	command <<<
 		set -euo pipefail
 
+		echo "gfatools version: " $(gfatools version)
+
 		gfatools gfa2fa \
 			~{gfa} \
 		> ~{gfa_basename}.fasta
+
+		bgzip --version
 
 		bgzip \
 			--threads ~{threads} \
 			--stdout \
 			~{gfa_basename}.fasta \
 		> ~{gfa_basename}.fasta.gz
+
+		echo "calN50.js version: " $(k8 /opt/calN50/calN50.js -v)
 
 		# Calculate assembly stats
 		k8 \
@@ -197,6 +205,10 @@ task align_hifiasm {
 
 	command <<<
 		set -euo pipefail
+
+		echo "minimap2 version: " $(minimap2 --version)
+		
+		samtools --version
 
 		minimap2 \
 			-t ~{threads - 4} \
