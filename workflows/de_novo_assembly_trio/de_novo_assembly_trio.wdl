@@ -164,7 +164,7 @@ task yak_count {
 	command <<<
 		set -euo pipefail
 
-		echo "yak version: " $(yak version)
+		echo "yak version: $(yak version)"
 
 		yak count \
 			-t ~{threads} \

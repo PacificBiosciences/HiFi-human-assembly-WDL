@@ -93,7 +93,7 @@ task hifiasm_assemble {
 	command <<<
 		set -euo pipefail
 
-		echo "hifiasm version: " $(hifiasm --version)
+		echo "hifiasm version: $(hifiasm --version)"
 
 		hifiasm \
 			-o ~{prefix} \
@@ -146,7 +146,7 @@ task gfa2fa {
 	command <<<
 		set -euo pipefail
 
-		echo "gfatools version: " $(gfatools version)
+		echo "gfatools version: $(gfatools version)"
 
 		gfatools gfa2fa \
 			~{gfa} \
@@ -160,7 +160,7 @@ task gfa2fa {
 			~{gfa_basename}.fasta \
 		> ~{gfa_basename}.fasta.gz
 
-		echo "calN50.js version: " $(k8 /opt/calN50/calN50.js -v)
+		echo "calN50.js version: $(k8 /opt/calN50/calN50.js -v)"
 
 		# Calculate assembly stats
 		k8 \
@@ -206,7 +206,7 @@ task align_hifiasm {
 	command <<<
 		set -euo pipefail
 
-		echo "minimap2 version: " $(minimap2 --version)
+		echo "minimap2 version: $(minimap2 --version)"
 		
 		samtools --version
 
