@@ -16,8 +16,8 @@
   "de_novo_assembly.reference": {
     "name": "GRCh38",
     "fasta": {
-      "data": "s3://dnastack-resources/GRCh38/human_GRCh38_no_alt_analysis_set.fasta",
-      "data_index": "s3://dnastack-resources/GRCh38/human_GRCh38_no_alt_analysis_set.fasta.fai"
+      "data": "s3://dnastack-resources/dataset/GRCh38/human_GRCh38_no_alt_analysis_set.fasta",
+      "data_index": "s3://dnastack-resources/dataset/GRCh38/human_GRCh38_no_alt_analysis_set.fasta.fai"
     }
   },
   "de_novo_assembly.backend": "AWS",
