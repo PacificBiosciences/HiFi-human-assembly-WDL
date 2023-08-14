@@ -157,7 +157,7 @@ task yak_count {
 
 	# Usage up to 140 GB @ 10 threads for Revio samples
 	Int mem_gb = 16 * threads
-	Int disk_size = ceil(size(reads_fastas[0], "GB") * length(reads_fastas) * 2 + 20)
+	Int disk_size = ceil(size(reads_fastas, "GB") * 2 + 20)
 
 	command <<<
 		set -euo pipefail
