@@ -197,7 +197,7 @@ task yak_count {
 	Int disk_size = ceil(size(reads_fastas, "GB") * 2 + 20)
 	
 	# if sample is less than 15X (3.2Gb * 15) use -b37 bloom filter parameter
-	String yak_options = if sample_total_bp > 48 then "-b37" else ""
+	String yak_options = if sample_total_bp < 48 then "-b37" else ""
 
 	command <<<
 		set -euo pipefail
