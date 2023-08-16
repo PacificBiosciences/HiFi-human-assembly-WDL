@@ -41,10 +41,28 @@ workflow de_novo_assembly_trio {
 			}
 		}
 
+	    # For yak, we need to know the total input coverage so we can set cloud memory resources accordingly
+		scatter (fasta in samtools_fasta_father.reads_fasta) {
+			call fasta_basecount as fasta_bc_father {
+				input:
+					reads_fasta = fasta,
+					runtime_attributes = default_runtime_attributes
+			}
+		}
+
+		call get_total_bp as get_total_bp_father {
+			input:
+				sample_id = father.sample_id,
+				fasta_totals = fasta_bc_father.read_total_bp,
+				runtime_attributes = default_runtime_attributes
+		}
+
 		call yak_count as yak_count_father {
 			input:
 				sample_id = father.sample_id,
 				reads_fastas = samtools_fasta_father.reads_fasta,
+				sample_total_bp = get_total_bp_father.sample_total_bp,
+
 				runtime_attributes = default_runtime_attributes
 		}
 
@@ -56,10 +74,29 @@ workflow de_novo_assembly_trio {
 			}
 		}
 
+	    # For yak, we need to know the total input coverage so we can set cloud memory resources accordingly
+		scatter (fasta in samtools_fasta_mother.reads_fasta) {
+			call fasta_basecount as fasta_bc_mother {
+				input:
+					reads_fasta = fasta,
+					runtime_attributes = default_runtime_attributes
+			}
+		}
+
+		call get_total_bp as get_total_bp_mother {
+			input:
+				sample_id = mother.sample_id,
+				fasta_totals = fasta_bc_mother.read_total_bp,
+				runtime_attributes = default_runtime_attributes
+		}
+
+
 		call yak_count as yak_count_mother {
 			input:
 				sample_id = mother.sample_id,
 				reads_fastas = samtools_fasta_mother.reads_fasta,
+				sample_total_bp = get_total_bp_father.sample_total_bp,
+
 				runtime_attributes = default_runtime_attributes
 		}
 
@@ -149,15 +186,18 @@ task yak_count {
 	input {
 		String sample_id
 		Array[File] reads_fastas
+		Int sample_total_bp
 
 		RuntimeAttributes runtime_attributes
 	}
-
 	Int threads = 10
 
 	# Usage up to 140 GB @ 10 threads for Revio samples
 	Int mem_gb = 16 * threads
 	Int disk_size = ceil(size(reads_fastas, "GB") * 2 + 20)
+	
+	# if sample is less than 15X (3.2Gb * 15) use -b37 bloom filter parameter
+	String yak_options = if sample_total_bp > 48 then "-b37" else ""
 
 	command <<<
 		set -euo pipefail
@@ -165,6 +205,7 @@ task yak_count {
 		yak count \
 			-t ~{threads} \
 			-o ~{sample_id}.yak \
+			~{yak_options} \
 			~{sep=' ' reads_fastas}
 	>>>
 
@@ -184,4 +225,82 @@ task yak_count {
 		queueArn: runtime_attributes.queue_arn
 		zones: runtime_attributes.zones
 	}
+}
+
+task fasta_basecount {
+	input {
+		File reads_fasta
+		String reads_fasta_basename = basename(reads_fasta)
+		
+		RuntimeAttributes runtime_attributes
+	}
+
+	Int threads = 1
+	Int mem_gb = 4 * threads
+
+	Int disk_size = ceil(size(reads_fasta, "GB") * 2 + 20)
+
+	command <<<
+		set -euo pipefail
+
+		grep -v "^>" ~{reads_fasta} | tr -d '\n' | wc -c > ~{reads_fasta_basename}.total
+	>>>
+
+	output {
+		File read_total_bp = "~{reads_fasta_basename}.total"
+	}
+
+	runtime {
+		docker: "~{runtime_attributes.container_registry}/python@sha256:e4d921e252c3c19fe64097aa619c369c50cc862768d5fcb5e19d2877c55cfdd2"
+		cpu: threads
+		memory: mem_gb + " GB"
+		disk: disk_size + " GB"
+		disks: "local-disk " + disk_size + " HDD"
+		preemptible: runtime_attributes.preemptible_tries
+		maxRetries: runtime_attributes.max_retries
+		awsBatchRetryAttempts: runtime_attributes.max_retries
+		queueArn: runtime_attributes.queue_arn
+		zones: runtime_attributes.zones
+	}
+}
+
+task get_total_bp {
+	input {
+		String sample_id
+		Array[File] fasta_totals
+
+		RuntimeAttributes runtime_attributes
+	}
+
+	Int threads = 1
+	Int mem_gb = 4 * threads
+
+	Int disk_size = ceil(size(fasta_totals[0], "GB") * 2 + 20)
+
+	command <<<
+		set -euo pipefail
+
+		cat ~{sep=' ' fasta_totals} | awk '{sum+=$1}END{print sum/1000000000}' > ~{sample_id}.total
+
+	>>>
+
+	output {
+		Int sample_total_bp = round(read_float("~{sample_id}.total"))
+#			File sample_total_bp = "~{sample_id}.total"
+
+	}
+	
+	runtime {
+		docker: "~{runtime_attributes.container_registry}/python@sha256:e4d921e252c3c19fe64097aa619c369c50cc862768d5fcb5e19d2877c55cfdd2"
+		cpu: threads
+		memory: mem_gb + " GB"
+		disk: disk_size + " GB"
+		disks: "local-disk " + disk_size + " HDD"
+		preemptible: runtime_attributes.preemptible_tries
+		maxRetries: runtime_attributes.max_retries
+		awsBatchRetryAttempts: runtime_attributes.max_retries
+		queueArn: runtime_attributes.queue_arn
+		zones: runtime_attributes.zones
+	}
+
 }
