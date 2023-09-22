@@ -9,7 +9,7 @@ workflow assemble_genome {
 		String sample_id
 		Array[File] reads_fastas
 
-		ReferenceData reference
+		Array[ReferenceData] references
 
 		String? hifiasm_extra_params
 		File? father_yak
@@ -38,26 +38,36 @@ workflow assemble_genome {
 		call gfa2fa {
 			input:
 				gfa = gfa,
-				reference_index = reference.fasta.data_index,
-				runtime_attributes = default_runtime_attributes
+				runtime_attributes = default_runtime_attributes 
 		}
 	}
+	
+	scatter (ref in references) {
+		call align_hifiasm {
+			input:
+				sample_id = sample_id,
+				query_sequences = gfa2fa.zipped_fasta,
+				reference = ref.fasta.data,
+				reference_name = ref.name,
+				runtime_attributes = default_runtime_attributes
+		}
 
-	call align_hifiasm {
-		input:
-			sample_id = sample_id,
-			query_sequences = gfa2fa.zipped_fasta,
-			reference = reference.fasta.data,
-			reference_name = reference.name,
-			runtime_attributes = default_runtime_attributes
+		IndexData sample_aligned_bam = {
+			"data": align_hifiasm.asm_bam,
+			"data_index": align_hifiasm.asm_bam_index
+		}
+
+		Pair[ReferenceData,IndexData] align_data = (ref, sample_aligned_bam)
 	}
+
 
 	output {
 		Array[File] assembly_noseq_gfas = hifiasm_assemble.assembly_noseq_gfas
 		Array[File] assembly_lowQ_beds = hifiasm_assemble.assembly_lowQ_beds
 		Array[File] zipped_assembly_fastas = gfa2fa.zipped_fasta
 		Array[File] assembly_stats = gfa2fa.assembly_stats
-		IndexData asm_bam = {"data": align_hifiasm.asm_bam, "data_index": align_hifiasm.asm_bam_index}
+		Array[IndexData] asm_bams = sample_aligned_bam
+		Array[Pair[ReferenceData,IndexData]] alignments = align_data
 	}
 
 	parameter_meta {
@@ -132,8 +142,6 @@ task gfa2fa {
 	input {
 		File gfa
 
-		File reference_index
-
 		RuntimeAttributes runtime_attributes
 	}
 
@@ -157,10 +165,11 @@ task gfa2fa {
 		# Calculate assembly stats
 		k8 \
 			/opt/calN50/calN50.js \
-			-f ~{reference_index} \
 			~{gfa_basename}.fasta.gz \
 		> ~{gfa_basename}.fasta.stats.txt
 	>>>
+
+
 
 	output {
 		File zipped_fasta = "~{gfa_basename}.fasta.gz"

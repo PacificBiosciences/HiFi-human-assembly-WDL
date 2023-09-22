@@ -12,7 +12,7 @@ workflow de_novo_assembly_sample {
 	input {
 		Sample sample
 
-		ReferenceData reference
+		Array[ReferenceData] references
 
 		String backend
 		RuntimeAttributes default_runtime_attributes
@@ -31,43 +31,53 @@ workflow de_novo_assembly_sample {
 		input:
 			sample_id = sample.sample_id,
 			reads_fastas = samtools_fasta.reads_fasta,
-			reference = reference,
+			references = references,
 			hifiasm_extra_params = "",
 			backend = backend,
 			default_runtime_attributes = default_runtime_attributes,
 			on_demand_runtime_attributes = on_demand_runtime_attributes
 	}
 
-	call htsbox {
-		input:
-			bam = assemble_genome.asm_bam.data,
-			bam_index = assemble_genome.asm_bam.data_index,
-			reference = reference.fasta.data,
-			runtime_attributes = default_runtime_attributes
-	}
+	scatter (aln in assemble_genome.alignments) {
+		ReferenceData ref = aln.left
+		IndexData bam = aln.right
+		call htsbox {
+			input:
+				bam = bam.data,
+				bam_index = bam.data_index,
+				reference = ref.fasta.data,
+				runtime_attributes = default_runtime_attributes
+		}
 
-	call ZipIndexVcf.zip_index_vcf {
-		input:
-			vcf = htsbox.htsbox_vcf,
-			runtime_attributes = default_runtime_attributes
-	}
+		call ZipIndexVcf.zip_index_vcf {
+			input:
+				vcf = htsbox.htsbox_vcf,
+				runtime_attributes = default_runtime_attributes
+		}
 
-	call BcftoolsStats.bcftools_stats {
-		input:
-			vcf = zip_index_vcf.zipped_vcf,
-			params = "--samples ~{basename(assemble_genome.asm_bam.data)}",
-			reference = reference.fasta.data,
-			runtime_attributes = default_runtime_attributes
-	}
+		IndexData htsbox_vcf = {
+			"data": zip_index_vcf.zipped_vcf, 
+			"data_index": zip_index_vcf.zipped_vcf_index
+		}
 
+		call BcftoolsStats.bcftools_stats {
+			input:
+				vcf = zip_index_vcf.zipped_vcf,
+				params = "--samples ~{basename(bam.data)}",				
+				reference = ref.fasta.data,
+				runtime_attributes = default_runtime_attributes
+		}
+
+	}
 	output {
 		Array[File] assembly_noseq_gfas = assemble_genome.assembly_noseq_gfas
 		Array[File] assembly_lowQ_beds = assemble_genome.assembly_lowQ_beds
 		Array[File] zipped_assembly_fastas = assemble_genome.zipped_assembly_fastas
 		Array[File] assembly_stats = assemble_genome.assembly_stats
-		IndexData asm_bam = assemble_genome.asm_bam
-		IndexData htsbox_vcf = {"data": zip_index_vcf.zipped_vcf, "data_index": zip_index_vcf.zipped_vcf_index}
-		File htsbox_vcf_stats = bcftools_stats.stats
+		Array[IndexData] asm_bams = assemble_genome.asm_bams
+
+		Array[IndexData] htsbox_vcfs = htsbox_vcf
+		Array[File] htsbox_vcf_stats = bcftools_stats.stats
 	}
 
 	parameter_meta {

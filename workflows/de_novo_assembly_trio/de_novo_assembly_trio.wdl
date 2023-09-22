@@ -11,7 +11,7 @@ workflow de_novo_assembly_trio {
 	input {
 		Cohort cohort
 
-		ReferenceData reference
+		Array[ReferenceData] references
 
 		String backend
 		RuntimeAttributes default_runtime_attributes
@@ -121,7 +121,7 @@ workflow de_novo_assembly_trio {
 				input:
 					sample_id = "~{cohort.cohort_id}.~{child.sample_id}",
 					reads_fastas = samtools_fasta_child.reads_fasta,
-					reference = reference,
+					references = references,
 					hifiasm_extra_params = "-c1 -d1",
 					father_yak = yak_count_father.yak,
 					mother_yak = yak_count_mother.yak,
@@ -138,12 +138,13 @@ workflow de_novo_assembly_trio {
 		Array[Array[File]] assembly_lowQ_beds = flatten(assemble_genome.assembly_lowQ_beds)
 		Array[Array[File]] zipped_assembly_fastas = flatten(assemble_genome.zipped_assembly_fastas)
 		Array[Array[File]] assembly_stats = flatten(assemble_genome.assembly_stats)
-		Array[IndexData] asm_bams = flatten(assemble_genome.asm_bam)
+		Array[Array[IndexData]] asm_bams = flatten(assemble_genome.asm_bams)
+
 	}
 
 	parameter_meta {
 		cohort: {help: "Sample information for the cohort"}
-		reference: {help: "Reference genome data"}
+		references: {help: "List of reference genome data"}
 		default_runtime_attributes: {help: "Default RuntimeAttributes; spot if preemptible was set to true, otherwise on_demand"}
 		on_demand_runtime_attributes: {help: "RuntimeAttributes for tasks that require dedicated instances"}
 	}
