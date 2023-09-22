@@ -163,6 +163,16 @@
               }
             }
           ]
+        },
+        "fasta_basecount": {
+          "key": "fasta_basecount",
+          "digest": "",
+          "tests": []
+        },
+        "get_total_gbp": {
+          "key": "get_total_gbp",
+          "digest": "",
+          "tests": []
         }
       }
     },
@@ -325,6 +335,156 @@
       "name": "",
       "description": "",
       "tasks": {}
+    },
+    "workflows/wdl-common/wdl/tasks/glnexus.wdl": {
+      "key": "workflows/wdl-common/wdl/tasks/glnexus.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "glnexus": {
+          "key": "glnexus",
+          "digest": "",
+          "tests": []
+        }
+      }
+    },
+    "workflows/wdl-common/wdl/tasks/mosdepth.wdl": {
+      "key": "workflows/wdl-common/wdl/tasks/mosdepth.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "mosdepth": {
+          "key": "mosdepth",
+          "digest": "",
+          "tests": []
+        }
+      }
+    },
+    "workflows/wdl-common/wdl/tasks/pbsv_call.wdl": {
+      "key": "workflows/wdl-common/wdl/tasks/pbsv_call.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "pbsv_call": {
+          "key": "pbsv_call",
+          "digest": "",
+          "tests": []
+        }
+      }
+    },
+    "workflows/wdl-common/wdl/tasks/pbsv_discover.wdl": {
+      "key": "workflows/wdl-common/wdl/tasks/pbsv_discover.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "pbsv_discover": {
+          "key": "pbsv_discover",
+          "digest": "",
+          "tests": []
+        }
+      }
+    },
+    "workflows/wdl-common/wdl/tasks/pharmcat.wdl": {
+      "key": "workflows/wdl-common/wdl/tasks/pharmcat.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "pangu_cyp2d6": {
+          "key": "pangu_cyp2d6",
+          "digest": "",
+          "tests": []
+        },
+        "pharmcat_preprocess": {
+          "key": "pharmcat_preprocess",
+          "digest": "",
+          "tests": []
+        },
+        "filter_preprocessed_vcf": {
+          "key": "filter_preprocessed_vcf",
+          "digest": "",
+          "tests": []
+        },
+        "run_pharmcat": {
+          "key": "run_pharmcat",
+          "digest": "",
+          "tests": []
+        }
+      }
+    },
+    "workflows/wdl-common/wdl/tasks/whatshap_haplotag.wdl": {
+      "key": "workflows/wdl-common/wdl/tasks/whatshap_haplotag.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "whatshap_haplotag": {
+          "key": "whatshap_haplotag",
+          "digest": "",
+          "tests": []
+        }
+      }
+    },
+    "workflows/wdl-common/wdl/tasks/whatshap_phase.wdl": {
+      "key": "workflows/wdl-common/wdl/tasks/whatshap_phase.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "whatshap_phase": {
+          "key": "whatshap_phase",
+          "digest": "",
+          "tests": []
+        }
+      }
+    },
+    "workflows/wdl-common/wdl/tasks/whatshap_stats.wdl": {
+      "key": "workflows/wdl-common/wdl/tasks/whatshap_stats.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "whatshap_stats": {
+          "key": "whatshap_stats",
+          "digest": "",
+          "tests": []
+        }
+      }
+    },
+    "workflows/wdl-common/wdl/workflows/deepvariant/deepvariant.wdl": {
+      "key": "workflows/wdl-common/wdl/workflows/deepvariant/deepvariant.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "deepvariant_make_examples": {
+          "key": "deepvariant_make_examples",
+          "digest": "",
+          "tests": []
+        },
+        "deepvariant_call_variants": {
+          "key": "deepvariant_call_variants",
+          "digest": "",
+          "tests": []
+        },
+        "deepvariant_postprocess_variants": {
+          "key": "deepvariant_postprocess_variants",
+          "digest": "",
+          "tests": []
+        }
+      }
+    },
+    "workflows/wdl-common/wdl/workflows/phase_vcf/phase_vcf.wdl": {
+      "key": "workflows/wdl-common/wdl/workflows/phase_vcf/phase_vcf.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "split_vcf": {
+          "key": "split_vcf",
+          "digest": "",
+          "tests": []
+        },
+        "bcftools_concat": {
+          "key": "bcftools_concat",
+          "digest": "",
+          "tests": []
+        }
+      }
     }
   },
   "engines": {

@@ -50,7 +50,7 @@ workflow de_novo_assembly_trio {
 			}
 		}
 
-		call get_total_bp as get_total_bp_father {
+		call get_total_gbp as get_total_bp_father {
 			input:
 				sample_id = father.sample_id,
 				fasta_totals = fasta_bc_father.read_total_bp,
@@ -61,7 +61,7 @@ workflow de_novo_assembly_trio {
 			input:
 				sample_id = father.sample_id,
 				reads_fastas = samtools_fasta_father.reads_fasta,
-				sample_total_bp = get_total_bp_father.sample_total_bp,
+				sample_total_gbp = get_total_bp_father.sample_total_gbp,
 
 				runtime_attributes = default_runtime_attributes
 		}
@@ -83,7 +83,7 @@ workflow de_novo_assembly_trio {
 			}
 		}
 
-		call get_total_bp as get_total_bp_mother {
+		call get_total_gbp as get_total_bp_mother {
 			input:
 				sample_id = mother.sample_id,
 				fasta_totals = fasta_bc_mother.read_total_bp,
@@ -95,7 +95,7 @@ workflow de_novo_assembly_trio {
 			input:
 				sample_id = mother.sample_id,
 				reads_fastas = samtools_fasta_mother.reads_fasta,
-				sample_total_bp = get_total_bp_father.sample_total_bp,
+				sample_total_gbp = get_total_bp_father.sample_total_gbp,
 
 				runtime_attributes = default_runtime_attributes
 		}
@@ -187,7 +187,7 @@ task yak_count {
 	input {
 		String sample_id
 		Array[File] reads_fastas
-		Int sample_total_bp
+		Int sample_total_gbp
 
 		RuntimeAttributes runtime_attributes
 	}
@@ -197,8 +197,9 @@ task yak_count {
 	Int mem_gb = 16 * threads
 	Int disk_size = ceil(size(reads_fastas, "GB") * 2 + 20)
 	
-	# Use bloom filter (-b37) to conserve on resources unless input coverage is low (<15X)
-	String yak_options = if sample_total_bp < 48000000000 then "" else "-b37"
+	# Use bloom filter (-b37) to conserve resources unless input coverage 
+	# is low ( <15X;  (3.2Gb*15=48))
+	String yak_options = if sample_total_gbp < 48 then "" else "-b37"
 
 	command <<<
 		set -euo pipefail
@@ -265,7 +266,7 @@ task fasta_basecount {
 	}
 }
 
-task get_total_bp {
+task get_total_gbp {
 	input {
 		String sample_id
 		Array[File] fasta_totals
@@ -286,8 +287,8 @@ task get_total_bp {
 	>>>
 
 	output {
-		Int sample_total_bp = round(read_float("~{sample_id}.total"))
-
+		Int sample_total_gbp = round(read_float("~{sample_id}.total"))
+		#Int sample_total_cov = round(sample_total_bp / 3200000000)
 	}
 	
 	runtime {
