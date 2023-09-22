@@ -197,8 +197,8 @@ task yak_count {
 	Int mem_gb = 16 * threads
 	Int disk_size = ceil(size(reads_fastas, "GB") * 2 + 20)
 	
-	# if sample is less than 15X (3.2Gb * 15) use -b37 bloom filter parameter
-	String yak_options = if sample_total_bp < 48 then "-b37" else ""
+	# Use bloom filter (-b37) to conserve on resources unless input coverage is low (<15X)
+	String yak_options = if sample_total_bp < 48000000000 then "" else "-b37"
 
 	command <<<
 		set -euo pipefail
@@ -287,7 +287,6 @@ task get_total_bp {
 
 	output {
 		Int sample_total_bp = round(read_float("~{sample_id}.total"))
-#			File sample_total_bp = "~{sample_id}.total"
 
 	}
 	
