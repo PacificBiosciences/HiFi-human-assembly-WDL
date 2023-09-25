@@ -150,6 +150,7 @@
                   "${resources_file_path}/m64017_200108_232219.hifi_reads.fasta",
                   "${resources_file_path}/m64017_200112_090459.hifi_reads.fasta"
                 ],
+                "yak_options": "-b37",
                 "runtime_attributes": "${default_runtime_attributes}"
               },
               "output_tests": {

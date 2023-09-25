@@ -75,7 +75,6 @@ workflow de_novo_assembly {
 		Array[Array[File]]? trio_assembly_lowQ_beds = de_novo_assembly_trio.assembly_lowQ_beds
 		Array[Array[File]]? trio_zipped_assembly_fastas = de_novo_assembly_trio.zipped_assembly_fastas
 		Array[Array[File]]? trio_assembly_stats = de_novo_assembly_trio.assembly_stats
-##		Array[IndexData]? trio_asm_bams = de_novo_assembly_trio.asm_bams
 		Array[Array[IndexData]]? trio_asm_bams = de_novo_assembly_trio.asm_bams
 	}
 
