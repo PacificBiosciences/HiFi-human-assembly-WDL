@@ -50,19 +50,10 @@ workflow de_novo_assembly_trio {
 			}
 		}
 
-		call get_total_gbp as get_total_bp_father {
+		call get_total_gbp as get_total_gbp_father {
 			input:
 				sample_id = father.sample_id,
 				fasta_totals = fasta_bc_father.read_total_bp,
-				runtime_attributes = default_runtime_attributes
-		}
-
-		call yak_count as yak_count_father {
-			input:
-				sample_id = father.sample_id,
-				reads_fastas = samtools_fasta_father.reads_fasta,
-				sample_total_gbp = get_total_bp_father.sample_total_gbp,
-
 				runtime_attributes = default_runtime_attributes
 		}
 
@@ -83,19 +74,35 @@ workflow de_novo_assembly_trio {
 			}
 		}
 
-		call get_total_gbp as get_total_bp_mother {
+		call get_total_gbp as get_total_gbp_mother {
 			input:
 				sample_id = mother.sample_id,
 				fasta_totals = fasta_bc_mother.read_total_bp,
 				runtime_attributes = default_runtime_attributes
 		}
 
+		call determine_yak_options {
+			input:
+			father_total_gbp = get_total_gbp_father.sample_total_gbp,
+			mother_total_gbp = get_total_gbp_mother.sample_total_gbp,				
+		}
+
+		call yak_count as yak_count_father {
+			input:
+				sample_id = father.sample_id,
+				reads_fastas = samtools_fasta_father.reads_fasta,
+				yak_options = determine_yak_options.yak_options,
+#				sample_total_gbp = get_total_gbp_father.sample_total_gbp,
+
+				runtime_attributes = default_runtime_attributes
+		}
 
 		call yak_count as yak_count_mother {
 			input:
 				sample_id = mother.sample_id,
 				reads_fastas = samtools_fasta_mother.reads_fasta,
-				sample_total_gbp = get_total_bp_father.sample_total_gbp,
+				yak_options = determine_yak_options.yak_options,
+#				sample_total_gbp = get_total_gbp_mother.sample_total_gbp,
 
 				runtime_attributes = default_runtime_attributes
 		}
@@ -183,11 +190,32 @@ task parse_families {
 	}
 }
 
+task determine_yak_options {
+	input {
+		Int mother_total_gbp 
+		Int father_total_gbp
+	}
+	
+	command {
+		set -e
+		if [ ~{father_total_gbp} -lt 48 ] && [ ~{mother_total_gbp} -lt 48 ]; then
+			options=""
+		else
+			options="-b37"
+		fi
+		echo $options
+	}
+	output {
+		String yak_options = read_string(stdout())
+	}
+}
+
 task yak_count {
 	input {
 		String sample_id
 		Array[File] reads_fastas
-		Int sample_total_gbp
+		#Int sample_total_gbp
+		String yak_options
 
 		RuntimeAttributes runtime_attributes
 	}
@@ -199,7 +227,7 @@ task yak_count {
 	
 	# Use bloom filter (-b37) to conserve resources unless input coverage 
 	# is low ( <15X;  (3.2Gb*15=48))
-	String yak_options = if sample_total_gbp < 48 then "" else "-b37"
+	#String yak_options = if sample_total_gbp < 48 then "" else "-b37"
 
 	command <<<
 		set -euo pipefail
@@ -282,7 +310,7 @@ task get_total_gbp {
 	command <<<
 		set -euo pipefail
 
-		cat ~{sep=' ' fasta_totals} | awk '{sum+=$1}END{print sum/1000000000}' > ~{sample_id}.total
+		awk '{sum+=$1}END{print sum/1000000000}' ~{sep=' ' fasta_totals} > ~{sample_id}.total
 
 	>>>
 
@@ -305,3 +333,6 @@ task get_total_gbp {
 	}
 
 }
+
+#		cat ~{sep=' ' fasta_totals} | awk '{sum+=$1}END{print sum/1000000000}' > ~{sample_id}.total
+

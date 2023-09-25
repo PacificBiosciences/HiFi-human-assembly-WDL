@@ -173,6 +173,11 @@
           "key": "get_total_gbp",
           "digest": "",
           "tests": []
+        },
+        "determine_yak_options": {
+          "key": "determine_yak_options",
+          "digest": "",
+          "tests": []
         }
       }
     },
