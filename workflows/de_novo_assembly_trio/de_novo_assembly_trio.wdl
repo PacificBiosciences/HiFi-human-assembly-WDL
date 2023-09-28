@@ -54,11 +54,11 @@ workflow de_novo_assembly_trio {
 		#     one parent and <2 times in the other parent to be used for binning
 		# 60GB uncompressed FASTA ~= 10x coverage
 		# memory for 24 threads is 48GB with bloom filter (<=50x coverage) and 65GB without bloom filter (<=30x coverage)
-		Boolean bloom_filter = if ((size(samtools_fasta_father.reads_fasta, "GB") < 90) && (size(samtools_fasta_mother.reads_fasta, "GB") < 90)) then true else false
+		Boolean low_depth = if ((size(samtools_fasta_father.reads_fasta, "GB") < 90) && (size(samtools_fasta_mother.reads_fasta, "GB") < 90)) then true else false
 
-		String yak_params = if (bloom_filter) then "-b37" else ""
-		Int yak_mem_gb = if (bloom_filter) then 50 else 70
-		String hifiasm_extra_params = if (bloom_filter) then "" else "-c1 -d1"
+		String yak_params = if (low_depth) then "" else "-b37"
+		Int yak_mem_gb = if (low_depth) then 70 else 50
+		String hifiasm_extra_params = if (low_depth) then "-c1 -d1" else ""
 
 		call yak_count as yak_count_father {
 			input:
