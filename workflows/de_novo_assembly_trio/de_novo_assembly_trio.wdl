@@ -15,7 +15,6 @@ workflow de_novo_assembly_trio {
 
 		String backend
 		RuntimeAttributes default_runtime_attributes
-		RuntimeAttributes on_demand_runtime_attributes
 	}
 
 	call parse_families {
@@ -104,8 +103,7 @@ workflow de_novo_assembly_trio {
 					father_yak = yak_count_father.yak,
 					mother_yak = yak_count_mother.yak,
 					backend = backend,
-					default_runtime_attributes = default_runtime_attributes,
-					on_demand_runtime_attributes = on_demand_runtime_attributes
+					default_runtime_attributes = default_runtime_attributes
 			}
 		}
 	}
@@ -123,7 +121,6 @@ workflow de_novo_assembly_trio {
 		cohort: {help: "Sample information for the cohort"}
 		references: {help: "Array of Reference genomes data"}
 		default_runtime_attributes: {help: "Default RuntimeAttributes; spot if preemptible was set to true, otherwise on_demand"}
-		on_demand_runtime_attributes: {help: "RuntimeAttributes for tasks that require dedicated instances"}
 	}
 }
 

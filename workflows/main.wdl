@@ -40,8 +40,7 @@ workflow de_novo_assembly {
 					sample = sample,
 					references = references,
 					backend = backend,
-					default_runtime_attributes = default_runtime_attributes,
-					on_demand_runtime_attributes = backend_configuration.on_demand_runtime_attributes
+					default_runtime_attributes = default_runtime_attributes
 			}
 		}
 	}
@@ -53,8 +52,7 @@ workflow de_novo_assembly {
 					cohort = cohort,
 					references = references,
 					backend = backend,
-					default_runtime_attributes = default_runtime_attributes,
-					on_demand_runtime_attributes = backend_configuration.on_demand_runtime_attributes
+					default_runtime_attributes = default_runtime_attributes
 			}
 		}
 	}
