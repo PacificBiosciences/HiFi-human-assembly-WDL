@@ -150,7 +150,8 @@
                   "${resources_file_path}/m64017_200108_232219.hifi_reads.fasta",
                   "${resources_file_path}/m64017_200112_090459.hifi_reads.fasta"
                 ],
-                "yak_options": "-b37",
+                "yak_params": "-b37",
+                "mem_gb": 70,
                 "runtime_attributes": "${default_runtime_attributes}"
               },
               "output_tests": {
@@ -164,21 +165,6 @@
               }
             }
           ]
-        },
-        "fasta_basecount": {
-          "key": "fasta_basecount",
-          "digest": "",
-          "tests": []
-        },
-        "get_total_gbp": {
-          "key": "get_total_gbp",
-          "digest": "",
-          "tests": []
-        },
-        "determine_yak_options": {
-          "key": "determine_yak_options",
-          "digest": "",
-          "tests": []
         }
       }
     },
