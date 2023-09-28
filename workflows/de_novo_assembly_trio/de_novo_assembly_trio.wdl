@@ -41,22 +41,6 @@ workflow de_novo_assembly_trio {
 			}
 		}
 
-	    # For yak, we need to know the total input coverage so we can set cloud memory resources accordingly
-		scatter (fasta in samtools_fasta_father.reads_fasta) {
-			call fasta_basecount as fasta_bc_father {
-				input:
-					reads_fasta = fasta,
-					runtime_attributes = default_runtime_attributes
-			}
-		}
-
-		call get_total_gbp as get_total_gbp_father {
-			input:
-				sample_id = father.sample_id,
-				fasta_totals = fasta_bc_father.read_total_bp,
-				runtime_attributes = default_runtime_attributes
-		}
-
 		scatter (movie_bam in mother.movie_bams) {
 			call SamtoolsFasta.samtools_fasta as samtools_fasta_mother {
 				input:
@@ -65,33 +49,23 @@ workflow de_novo_assembly_trio {
 			}
 		}
 
-	    # For yak, we need to know the total input coverage so we can set cloud memory resources accordingly
-		scatter (fasta in samtools_fasta_mother.reads_fasta) {
-			call fasta_basecount as fasta_bc_mother {
-				input:
-					reads_fasta = fasta,
-					runtime_attributes = default_runtime_attributes
-			}
-		}
+		# if parental coverage is low (<15x), keep singleton kmers from parents and use them to bin child reads
+		# if parental coverage is high (>=15x), use bloom filter and require that a kmer occur >= 5 times in
+		#     one parent and <2 times in the other parent to be used for binning
+		# 60GB uncompressed FASTA ~= 10x coverage
+		# memory for 24 threads is 48GB with bloom filter (<=50x coverage) and 65GB without bloom filter (<=30x coverage)
+		Boolean bloom_filter = if ((size(samtools_fasta_father.reads_fasta, "GB") < 90) && (size(samtools_fasta_mother.reads_fasta, "GB") < 90)) then true else false
 
-		call get_total_gbp as get_total_gbp_mother {
-			input:
-				sample_id = mother.sample_id,
-				fasta_totals = fasta_bc_mother.read_total_bp,
-				runtime_attributes = default_runtime_attributes
-		}
-
-		call determine_yak_options {
-			input:
-			father_total_gbp = get_total_gbp_father.sample_total_gbp,
-			mother_total_gbp = get_total_gbp_mother.sample_total_gbp,				
-		}
+		String yak_params = if (bloom_filter) then "-b37" else ""
+		Int yak_mem_gb = if (bloom_filter) then 50 else 70
+		String hifiasm_extra_params = if (bloom_filter) then "" else "-c1 -d1"
 
 		call yak_count as yak_count_father {
 			input:
 				sample_id = father.sample_id,
 				reads_fastas = samtools_fasta_father.reads_fasta,
-				yak_options = determine_yak_options.yak_options,
+				yak_params = yak_params,
+				mem_gb = yak_mem_gb,
 				runtime_attributes = default_runtime_attributes
 		}
 
@@ -99,7 +73,8 @@ workflow de_novo_assembly_trio {
 			input:
 				sample_id = mother.sample_id,
 				reads_fastas = samtools_fasta_mother.reads_fasta,
-				yak_options = determine_yak_options.yak_options,
+				yak_params = yak_params,
+				mem_gb = yak_mem_gb,
 				runtime_attributes = default_runtime_attributes
 		}
 
@@ -125,7 +100,7 @@ workflow de_novo_assembly_trio {
 					sample_id = "~{cohort.cohort_id}.~{child.sample_id}",
 					reads_fastas = samtools_fasta_child.reads_fasta,
 					references = references,
-					hifiasm_extra_params = "-c1 -d1",
+					hifiasm_extra_params = hifiasm_extra_params,
 					father_yak = yak_count_father.yak,
 					mother_yak = yak_count_mother.yak,
 					backend = backend,
@@ -142,12 +117,11 @@ workflow de_novo_assembly_trio {
 		Array[Array[File]] zipped_assembly_fastas = flatten(assemble_genome.zipped_assembly_fastas)
 		Array[Array[File]] assembly_stats = flatten(assemble_genome.assembly_stats)
 		Array[Array[IndexData]] asm_bams = flatten(assemble_genome.asm_bams)
-
 	}
 
 	parameter_meta {
 		cohort: {help: "Sample information for the cohort"}
-		references: {help: "List of reference genome data"}
+		references: {help: "Array of Reference genomes data"}
 		default_runtime_attributes: {help: "Default RuntimeAttributes; spot if preemptible was set to true, otherwise on_demand"}
 		on_demand_runtime_attributes: {help: "RuntimeAttributes for tasks that require dedicated instances"}
 	}
@@ -186,47 +160,27 @@ task parse_families {
 	}
 }
 
-task determine_yak_options {
-	input {
-		Int mother_total_gbp 
-		Int father_total_gbp
-	}
-	
-	command {
-		set -e
-		if [ ~{father_total_gbp} -lt 48 ] && [ ~{mother_total_gbp} -lt 48 ]; then
-			options=""
-		else
-			options="-b37"
-		fi
-		echo $options
-	}
-	output {
-		String yak_options = read_string(stdout())
-	}
-}
-
 task yak_count {
 	input {
 		String sample_id
 		Array[File] reads_fastas
-		String yak_options
+
+		String yak_params
+		String mem_gb
 
 		RuntimeAttributes runtime_attributes
 	}
-	Int threads = 10
 
-	# Usage up to 140 GB @ 10 threads for Revio samples
-	Int mem_gb = 16 * threads
+	Int threads = 24
 	Int disk_size = ceil(size(reads_fastas, "GB") * 2 + 20)
-	
+
 	command <<<
 		set -euo pipefail
 
 		yak count \
 			-t ~{threads} \
 			-o ~{sample_id}.yak \
-			~{yak_options} \
+			~{yak_params} \
 			~{sep=' ' reads_fastas}
 	>>>
 
@@ -246,80 +200,4 @@ task yak_count {
 		queueArn: runtime_attributes.queue_arn
 		zones: runtime_attributes.zones
 	}
-}
-
-task fasta_basecount {
-	input {
-		File reads_fasta
-		String reads_fasta_basename = basename(reads_fasta)
-		
-		RuntimeAttributes runtime_attributes
-	}
-
-	Int threads = 1
-	Int mem_gb = 4 * threads
-
-	Int disk_size = ceil(size(reads_fasta, "GB") * 2 + 20)
-
-	command <<<
-		set -euo pipefail
-
-		grep -v "^>" ~{reads_fasta} | tr -d '\n' | wc -c > ~{reads_fasta_basename}.total
-	>>>
-
-	output {
-		File read_total_bp = "~{reads_fasta_basename}.total"
-	}
-
-	runtime {
-		docker: "~{runtime_attributes.container_registry}/python@sha256:e4d921e252c3c19fe64097aa619c369c50cc862768d5fcb5e19d2877c55cfdd2"
-		cpu: threads
-		memory: mem_gb + " GB"
-		disk: disk_size + " GB"
-		disks: "local-disk " + disk_size + " HDD"
-		preemptible: runtime_attributes.preemptible_tries
-		maxRetries: runtime_attributes.max_retries
-		awsBatchRetryAttempts: runtime_attributes.max_retries
-		queueArn: runtime_attributes.queue_arn
-		zones: runtime_attributes.zones
-	}
-}
-
-task get_total_gbp {
-	input {
-		String sample_id
-		Array[File] fasta_totals
-
-		RuntimeAttributes runtime_attributes
-	}
-
-	Int threads = 1
-	Int mem_gb = 4 * threads
-
-	Int disk_size = ceil(size(fasta_totals[0], "GB") * 2 + 20)
-
-	command <<<
-		set -euo pipefail
-
-		awk '{sum+=$1}END{print sum/1000000000}' ~{sep=' ' fasta_totals} > ~{sample_id}.total
-
-	>>>
-
-	output {
-		Int sample_total_gbp = round(read_float("~{sample_id}.total"))
-	}
-	
-	runtime {
-		docker: "~{runtime_attributes.container_registry}/python@sha256:e4d921e252c3c19fe64097aa619c369c50cc862768d5fcb5e19d2877c55cfdd2"
-		cpu: threads
-		memory: mem_gb + " GB"
-		disk: disk_size + " GB"
-		disks: "local-disk " + disk_size + " HDD"
-		preemptible: runtime_attributes.preemptible_tries
-		maxRetries: runtime_attributes.max_retries
-		awsBatchRetryAttempts: runtime_attributes.max_retries
-		queueArn: runtime_attributes.queue_arn
-		zones: runtime_attributes.zones
-	}
-
 }

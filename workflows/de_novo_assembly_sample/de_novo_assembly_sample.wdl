@@ -32,7 +32,6 @@ workflow de_novo_assembly_sample {
 			sample_id = sample.sample_id,
 			reads_fastas = samtools_fasta.reads_fasta,
 			references = references,
-			hifiasm_extra_params = "",
 			backend = backend,
 			default_runtime_attributes = default_runtime_attributes,
 			on_demand_runtime_attributes = on_demand_runtime_attributes
@@ -82,7 +81,7 @@ workflow de_novo_assembly_sample {
 
 	parameter_meta {
 		sample: {help: "Sample information and associated data files"}
-		reference: {help: "Reference genome data"}
+		references: {help: "Array of Reference genomes data"}
 		default_runtime_attributes: {help: "Default RuntimeAttributes; spot if preemptible was set to true, otherwise on_demand"}
 		on_demand_runtime_attributes: {help: "RuntimeAttributes for tasks that require dedicated instances"}
 	}
