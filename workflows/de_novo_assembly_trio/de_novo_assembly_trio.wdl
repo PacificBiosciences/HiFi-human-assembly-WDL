@@ -52,7 +52,7 @@ workflow de_novo_assembly_trio {
 		# if parental coverage is low (<15x), keep singleton kmers from parents and use them to bin child reads
 		# if parental coverage is high (>=15x), use bloom filter and require that a kmer occur >= 5 times in
 		#     one parent and <2 times in the other parent to be used for binning
-		# 60GB uncompressed FASTA ~= 10x coverage
+		# 60GB uncompressed FASTA ~= 10x coverage (this is not robust to big changes in mean read length)
 		# memory for 24 threads is 48GB with bloom filter (<=50x coverage) and 65GB without bloom filter (<=30x coverage)
 		Boolean low_depth = if ((size(samtools_fasta_father.reads_fasta, "GB") < 90) && (size(samtools_fasta_mother.reads_fasta, "GB") < 90)) then true else false
 
