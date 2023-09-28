@@ -13,7 +13,6 @@ workflow de_novo_assembly_trio {
 
 		Array[ReferenceData] references
 
-		String backend
 		RuntimeAttributes default_runtime_attributes
 	}
 
@@ -102,7 +101,6 @@ workflow de_novo_assembly_trio {
 					hifiasm_extra_params = hifiasm_extra_params,
 					father_yak = yak_count_father.yak,
 					mother_yak = yak_count_mother.yak,
-					backend = backend,
 					default_runtime_attributes = default_runtime_attributes
 			}
 		}

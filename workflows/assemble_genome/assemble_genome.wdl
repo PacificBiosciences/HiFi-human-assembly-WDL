@@ -15,7 +15,6 @@ workflow assemble_genome {
 		File? father_yak
 		File? mother_yak
 
-		String backend
 		RuntimeAttributes default_runtime_attributes
 	}
 

@@ -39,7 +39,6 @@ workflow de_novo_assembly {
 				input:
 					sample = sample,
 					references = references,
-					backend = backend,
 					default_runtime_attributes = default_runtime_attributes
 			}
 		}
@@ -51,7 +50,6 @@ workflow de_novo_assembly {
 				input:
 					cohort = cohort,
 					references = references,
-					backend = backend,
 					default_runtime_attributes = default_runtime_attributes
 			}
 		}

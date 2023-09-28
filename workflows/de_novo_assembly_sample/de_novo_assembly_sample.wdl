@@ -14,7 +14,6 @@ workflow de_novo_assembly_sample {
 
 		Array[ReferenceData] references
 
-		String backend
 		RuntimeAttributes default_runtime_attributes
 	}
 
@@ -31,7 +30,6 @@ workflow de_novo_assembly_sample {
 			sample_id = sample.sample_id,
 			reads_fastas = samtools_fasta.reads_fasta,
 			references = references,
-			backend = backend,
 			default_runtime_attributes = default_runtime_attributes
 	}
 
