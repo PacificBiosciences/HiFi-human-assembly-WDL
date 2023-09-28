@@ -166,7 +166,7 @@ task yak_count {
 		Array[File] reads_fastas
 
 		String yak_params
-		String mem_gb
+		Int mem_gb
 
 		RuntimeAttributes runtime_attributes
 	}
