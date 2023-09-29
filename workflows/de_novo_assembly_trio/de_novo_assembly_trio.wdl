@@ -54,9 +54,9 @@ workflow de_novo_assembly_trio {
 		# memory for 24 threads is 48GB with bloom filter (<=50x coverage) and 65GB without bloom filter (<=30x coverage)
 		Boolean low_depth = if ((size(samtools_fasta_father.reads_fasta, "GB") < 90) && (size(samtools_fasta_mother.reads_fasta, "GB") < 90)) then true else false
 
-		String yak_params = if (low_depth) then "" else "-b37"
+		String yak_params = if (low_depth) then "-b0" else "-b37"
 		Int yak_mem_gb = if (low_depth) then 70 else 50
-		String hifiasm_extra_params = if (low_depth) then "-c1 -d1" else ""
+		String hifiasm_extra_params = if (low_depth) then "-c1 -d1" else "-c2 -d5"
 
 		call yak_count as yak_count_father {
 			input:
