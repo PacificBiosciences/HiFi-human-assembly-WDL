@@ -13,13 +13,14 @@
     ],
     "run_de_novo_assembly_trio": "Boolean"
   },
-  "de_novo_assembly.reference": {
-    "name": "GRCh38",
+  "de_novo_assembly.references": [
+    {
+    "name": "String",
     "fasta": {
-      "data": "gs://<pb_bucket>/dataset/GRCh38/human_GRCh38_no_alt_analysis_set.fasta",
-      "data_index": "gs://<pb_bucket>/dataset/GRCh38/human_GRCh38_no_alt_analysis_set.fasta.fai"
+      "data": "File",
+      "data_index": "File"
     }
-  },
+  ],
   "de_novo_assembly.backend": "GCP",
   "de_novo_assembly.zones": "String",
   "de_novo_assembly.preemptible": "Boolean"

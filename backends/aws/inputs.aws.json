@@ -13,13 +13,14 @@
     ],
     "run_de_novo_assembly_trio": "Boolean"
   },
-  "de_novo_assembly.reference": {
-    "name": "GRCh38",
+  "de_novo_assembly.references": [
+    {
+    "name": "String",
     "fasta": {
-      "data": "s3://dnastack-resources/dataset/GRCh38/human_GRCh38_no_alt_analysis_set.fasta",
-      "data_index": "s3://dnastack-resources/dataset/GRCh38/human_GRCh38_no_alt_analysis_set.fasta.fai"
+      "data": "File",
+      "data_index": "File"
     }
-  },
+  ],
   "de_novo_assembly.backend": "AWS",
   "de_novo_assembly.zones": "us-east-2a us-east-2b us-east-2c",
   "de_novo_assembly.aws_spot_queue_arn": "",
