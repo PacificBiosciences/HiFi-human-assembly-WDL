@@ -11,7 +11,7 @@ workflow de_novo_assembly_trio {
 	input {
 		Cohort cohort
 
-		ReferenceData reference
+		Array[ReferenceData] references
 
 		String backend
 		RuntimeAttributes default_runtime_attributes
@@ -41,13 +41,6 @@ workflow de_novo_assembly_trio {
 			}
 		}
 
-		call yak_count as yak_count_father {
-			input:
-				sample_id = father.sample_id,
-				reads_fastas = samtools_fasta_father.reads_fasta,
-				runtime_attributes = default_runtime_attributes
-		}
-
 		scatter (movie_bam in mother.movie_bams) {
 			call SamtoolsFasta.samtools_fasta as samtools_fasta_mother {
 				input:
@@ -56,10 +49,32 @@ workflow de_novo_assembly_trio {
 			}
 		}
 
+		# if parental coverage is low (<15x), keep singleton kmers from parents and use them to bin child reads
+		# if parental coverage is high (>=15x), use bloom filter and require that a kmer occur >= 5 times in
+		#     one parent and <2 times in the other parent to be used for binning
+		# 60GB uncompressed FASTA ~= 10x coverage (this is not robust to big changes in mean read length)
+		# memory for 24 threads is 48GB with bloom filter (<=50x coverage) and 65GB without bloom filter (<=30x coverage)
+		Boolean low_depth = if ((size(samtools_fasta_father.reads_fasta, "GB") < 90) && (size(samtools_fasta_mother.reads_fasta, "GB") < 90)) then true else false
+
+		String yak_params = if (low_depth) then "-b0" else "-b37"
+		Int yak_mem_gb = if (low_depth) then 70 else 50
+		String hifiasm_extra_params = if (low_depth) then "-c1 -d1" else "-c2 -d5"
+
+		call yak_count as yak_count_father {
+			input:
+				sample_id = father.sample_id,
+				reads_fastas = samtools_fasta_father.reads_fasta,
+				yak_params = yak_params,
+				mem_gb = yak_mem_gb,
+				runtime_attributes = default_runtime_attributes
+		}
+
 		call yak_count as yak_count_mother {
 			input:
 				sample_id = mother.sample_id,
 				reads_fastas = samtools_fasta_mother.reads_fasta,
+				yak_params = yak_params,
+				mem_gb = yak_mem_gb,
 				runtime_attributes = default_runtime_attributes
 		}
 
@@ -84,8 +99,8 @@ workflow de_novo_assembly_trio {
 				input:
 					sample_id = "~{cohort.cohort_id}.~{child.sample_id}",
 					reads_fastas = samtools_fasta_child.reads_fasta,
-					reference = reference,
-					hifiasm_extra_params = "-c1 -d1",
+					references = references,
+					hifiasm_extra_params = hifiasm_extra_params,
 					father_yak = yak_count_father.yak,
 					mother_yak = yak_count_mother.yak,
 					backend = backend,
@@ -101,12 +116,12 @@ workflow de_novo_assembly_trio {
 		Array[Array[File]] assembly_lowQ_beds = flatten(assemble_genome.assembly_lowQ_beds)
 		Array[Array[File]] zipped_assembly_fastas = flatten(assemble_genome.zipped_assembly_fastas)
 		Array[Array[File]] assembly_stats = flatten(assemble_genome.assembly_stats)
-		Array[IndexData] asm_bams = flatten(assemble_genome.asm_bam)
+		Array[Array[IndexData]] asm_bams = flatten(assemble_genome.asm_bams)
 	}
 
 	parameter_meta {
 		cohort: {help: "Sample information for the cohort"}
-		reference: {help: "Reference genome data"}
+		references: {help: "Array of Reference genomes data"}
 		default_runtime_attributes: {help: "Default RuntimeAttributes; spot if preemptible was set to true, otherwise on_demand"}
 		on_demand_runtime_attributes: {help: "RuntimeAttributes for tasks that require dedicated instances"}
 	}
@@ -152,14 +167,14 @@ task yak_count {
 		String sample_id
 		Array[File] reads_fastas
 
+		String yak_params
+		Int mem_gb
+
 		RuntimeAttributes runtime_attributes
 	}
 
-	Int threads = 10
-
-	# Usage up to 140 GB @ 10 threads for Revio samples
-	Int mem_gb = 16 * threads
-	Int disk_size = ceil(size(reads_fastas[0], "GB") * length(reads_fastas) * 2 + 20)
+	Int threads = 24
+	Int disk_size = ceil(size(reads_fastas, "GB") * 2 + 20)
 
 	command <<<
 		set -euo pipefail
@@ -169,6 +184,7 @@ task yak_count {
 		yak count \
 			-t ~{threads} \
 			-o ~{sample_id}.yak \
+			~{yak_params} \
 			~{sep=' ' reads_fastas}
 	>>>
 

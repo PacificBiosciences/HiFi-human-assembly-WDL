@@ -13,16 +13,17 @@
     ],
     "run_de_novo_assembly_trio": "Boolean"
   },
-  "de_novo_assembly.reference": {
+  "de_novo_assembly.references": [
+    {
     "name": "String",
     "fasta": {
       "data": "File",
       "data_index": "File"
     }
-  },
-  "de_novo_assembly.backend": "String ['GCP', 'Azure', 'AWS', or 'HPC']",
-  "de_novo_assembly.zones": "String? (optional); required if backend is set to 'GCP' or 'AWS'",
-  "de_novo_assembly.aws_spot_queue_arn": "String? (optional); required if backend is set to 'AWS'",
-  "de_novo_assembly.aws_on_demand_queue_arn": "String? (optional); required if backend is set to 'AWS'",
+  ],
+  "de_novo_assembly.backend": "AWS",
+  "de_novo_assembly.zones": "us-east-2a us-east-2b us-east-2c",
+  "de_novo_assembly.aws_spot_queue_arn": "",
+  "de_novo_assembly.aws_on_demand_queue_arn": "",
   "de_novo_assembly.preemptible": "Boolean"
 }

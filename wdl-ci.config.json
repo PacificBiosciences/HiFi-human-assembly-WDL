@@ -19,7 +19,7 @@
       "tasks": {
         "bcftools_stats": {
           "key": "bcftools_stats",
-          "digest": "zgvmaa6wtldmojg3gixeiah5aak7khb5",
+          "digest": "hnaklilhvfhzokyogil55ymtufpzugdc",
           "tests": [
             {
               "inputs": {
@@ -49,7 +49,7 @@
       "tasks": {
         "zip_index_vcf": {
           "key": "zip_index_vcf",
-          "digest": "yxnm7toivkmsrrs4h3x72wdrtxd2lo72",
+          "digest": "zglkxnubs7arukywr6dtr2rmlrs4l6si",
           "tests": [
             {
               "inputs": {
@@ -79,7 +79,7 @@
       "tasks": {
         "samtools_fasta": {
           "key": "samtools_fasta",
-          "digest": "i2tzlr7ni5gglbe7regxody2bttg35na",
+          "digest": "fzvpxhpi2a5nyyys7ktoirf4ww2exbe3",
           "tests": [
             {
               "inputs": {
@@ -137,7 +137,7 @@
         },
         "yak_count": {
           "key": "yak_count",
-          "digest": "2e7nclylibk6b77wjef66o55uzs4kyyc",
+          "digest": "6hlh6n3b3cqohtmjweg57of626he4c4v",
           "tests": [
             {
               "inputs": {
@@ -150,6 +150,8 @@
                   "${resources_file_path}/m64017_200108_232219.hifi_reads.fasta",
                   "${resources_file_path}/m64017_200112_090459.hifi_reads.fasta"
                 ],
+                "yak_params": "-b37",
+                "mem_gb": 70,
                 "runtime_attributes": "${default_runtime_attributes}"
               },
               "output_tests": {
@@ -173,7 +175,7 @@
       "tasks": {
         "hifiasm_assemble": {
           "key": "hifiasm_assemble",
-          "digest": "byghh3pc6vhxsm46fw4m46wuk6rimuuy",
+          "digest": "vhkzwee3f754jcjksog22uyps3j6myow",
           "tests": [
             {
               "inputs": {
@@ -230,7 +232,7 @@
         },
         "gfa2fa": {
           "key": "gfa2fa",
-          "digest": "kxv2q6xr3x5u2f63tch6rtw2frtvqg7n",
+          "digest": "es7l5kyje3fiy5vxjnnsqg4fw6sitmdo",
           "tests": [
             {
               "inputs": {
@@ -262,7 +264,7 @@
         },
         "align_hifiasm": {
           "key": "align_hifiasm",
-          "digest": "2q7e6w6bxx2vue2rzwrhpoxkbuii25fi",
+          "digest": "4qf5jeepfn3jv3g2socql6xh7vmd4b7s",
           "tests": [
             {
               "inputs": {
@@ -325,6 +327,156 @@
       "name": "",
       "description": "",
       "tasks": {}
+    },
+    "workflows/wdl-common/wdl/tasks/glnexus.wdl": {
+      "key": "workflows/wdl-common/wdl/tasks/glnexus.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "glnexus": {
+          "key": "glnexus",
+          "digest": "",
+          "tests": []
+        }
+      }
+    },
+    "workflows/wdl-common/wdl/tasks/mosdepth.wdl": {
+      "key": "workflows/wdl-common/wdl/tasks/mosdepth.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "mosdepth": {
+          "key": "mosdepth",
+          "digest": "",
+          "tests": []
+        }
+      }
+    },
+    "workflows/wdl-common/wdl/tasks/pbsv_call.wdl": {
+      "key": "workflows/wdl-common/wdl/tasks/pbsv_call.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "pbsv_call": {
+          "key": "pbsv_call",
+          "digest": "",
+          "tests": []
+        }
+      }
+    },
+    "workflows/wdl-common/wdl/tasks/pbsv_discover.wdl": {
+      "key": "workflows/wdl-common/wdl/tasks/pbsv_discover.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "pbsv_discover": {
+          "key": "pbsv_discover",
+          "digest": "",
+          "tests": []
+        }
+      }
+    },
+    "workflows/wdl-common/wdl/tasks/pharmcat.wdl": {
+      "key": "workflows/wdl-common/wdl/tasks/pharmcat.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "pangu_cyp2d6": {
+          "key": "pangu_cyp2d6",
+          "digest": "",
+          "tests": []
+        },
+        "pharmcat_preprocess": {
+          "key": "pharmcat_preprocess",
+          "digest": "",
+          "tests": []
+        },
+        "filter_preprocessed_vcf": {
+          "key": "filter_preprocessed_vcf",
+          "digest": "",
+          "tests": []
+        },
+        "run_pharmcat": {
+          "key": "run_pharmcat",
+          "digest": "",
+          "tests": []
+        }
+      }
+    },
+    "workflows/wdl-common/wdl/tasks/whatshap_haplotag.wdl": {
+      "key": "workflows/wdl-common/wdl/tasks/whatshap_haplotag.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "whatshap_haplotag": {
+          "key": "whatshap_haplotag",
+          "digest": "",
+          "tests": []
+        }
+      }
+    },
+    "workflows/wdl-common/wdl/tasks/whatshap_phase.wdl": {
+      "key": "workflows/wdl-common/wdl/tasks/whatshap_phase.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "whatshap_phase": {
+          "key": "whatshap_phase",
+          "digest": "",
+          "tests": []
+        }
+      }
+    },
+    "workflows/wdl-common/wdl/tasks/whatshap_stats.wdl": {
+      "key": "workflows/wdl-common/wdl/tasks/whatshap_stats.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "whatshap_stats": {
+          "key": "whatshap_stats",
+          "digest": "",
+          "tests": []
+        }
+      }
+    },
+    "workflows/wdl-common/wdl/workflows/deepvariant/deepvariant.wdl": {
+      "key": "workflows/wdl-common/wdl/workflows/deepvariant/deepvariant.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "deepvariant_make_examples": {
+          "key": "deepvariant_make_examples",
+          "digest": "",
+          "tests": []
+        },
+        "deepvariant_call_variants": {
+          "key": "deepvariant_call_variants",
+          "digest": "",
+          "tests": []
+        },
+        "deepvariant_postprocess_variants": {
+          "key": "deepvariant_postprocess_variants",
+          "digest": "",
+          "tests": []
+        }
+      }
+    },
+    "workflows/wdl-common/wdl/workflows/phase_vcf/phase_vcf.wdl": {
+      "key": "workflows/wdl-common/wdl/workflows/phase_vcf/phase_vcf.wdl",
+      "name": "",
+      "description": "",
+      "tasks": {
+        "split_vcf": {
+          "key": "split_vcf",
+          "digest": "",
+          "tests": []
+        },
+        "bcftools_concat": {
+          "key": "bcftools_concat",
+          "digest": "",
+          "tests": []
+        }
+      }
     }
   },
   "engines": {

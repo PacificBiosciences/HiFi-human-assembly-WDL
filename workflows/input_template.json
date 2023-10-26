@@ -1,0 +1,31 @@
+{
+    "de_novo_assembly.cohort": {
+        "cohort_id": "String",
+        "samples": [
+            {
+                "sample_id": "String",
+                "movie_bams": "Array[File]",
+                "sex": "String?",
+                "father_id": "String?",
+                "mother_id": "String?",
+                "run_de_novo_assembly": "Boolean"
+            }
+        ],
+        "run_de_novo_assembly_trio": "Boolean"
+    },
+    "de_novo_assembly.references": [
+        {
+            "name": "String",
+            "fasta": {
+                "data": "File",
+                "data_index": "File"
+            }
+        }
+    ],
+    "de_novo_assembly.zones": "String? (optional); required if backend is set to 'AWS'",
+    "de_novo_assembly.aws_spot_queue_arn": "String? (optional); required if backend is set to 'AWS'",
+    "de_novo_assembly.aws_on_demand_queue_arn": "String? (optional)",
+    "de_novo_assembly.preemptible": "Boolean",
+    "de_novo_assembly.backend": "String ['GCP', 'Azure', 'AWS', or 'HPC']",
+    "de_novo_assembly.container_registry": "String? (optional)"
+}
