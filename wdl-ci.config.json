@@ -137,7 +137,7 @@
         },
         "yak_count": {
           "key": "yak_count",
-          "digest": "6hlh6n3b3cqohtmjweg57of626he4c4v",
+          "digest": "i4jt54vu25mhikalp47febetx7mn6xmo",
           "tests": [
             {
               "inputs": {
@@ -175,7 +175,7 @@
       "tasks": {
         "hifiasm_assemble": {
           "key": "hifiasm_assemble",
-          "digest": "vhkzwee3f754jcjksog22uyps3j6myow",
+          "digest": "yt7mrvhlur5xzn5sxbhe52kvvu6r4ejr",
           "tests": [
             {
               "inputs": {
@@ -232,7 +232,7 @@
         },
         "gfa2fa": {
           "key": "gfa2fa",
-          "digest": "es7l5kyje3fiy5vxjnnsqg4fw6sitmdo",
+          "digest": "drs64xxuazexpb6n6glhbkmartzdorbj",
           "tests": [
             {
               "inputs": {
@@ -264,7 +264,7 @@
         },
         "align_hifiasm": {
           "key": "align_hifiasm",
-          "digest": "4qf5jeepfn3jv3g2socql6xh7vmd4b7s",
+          "digest": "ctgtjbeekxz2xcq42jnuyxhsfnrb52xg",
           "tests": [
             {
               "inputs": {
