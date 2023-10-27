@@ -137,6 +137,8 @@ task parse_families {
 	command <<<
 		set -euo pipefail
 
+		parse_cohort.py --version
+
 		parse_cohort.py \
 			--cohort_json ~{cohort_json} \
 			--parse_families
@@ -147,7 +149,7 @@ task parse_families {
 	}
 
 	runtime {
-		docker: "~{runtime_attributes.container_registry}/parse-cohort@sha256:94444e7e3fd151936c9bbcb8a64b6a5e7d8c59de53b256a83f15c4ea203977b4"
+		docker: "~{runtime_attributes.container_registry}/parse-cohort@sha256:e6a8ac24ada706644e62878178790a0006db9a6abec7a312232052bb0666fe8f"
 		cpu: 2
 		memory: "4 GB"
 		disk: "20 GB"
@@ -176,6 +178,8 @@ task yak_count {
 
 	command <<<
 		set -euo pipefail
+
+		echo "yak version: $(yak version)"
 
 		yak count \
 			-t ~{threads} \
