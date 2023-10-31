@@ -15,10 +15,18 @@
   },
   "de_novo_assembly.references": [
     {
-    "name": "String",
-    "fasta": {
-      "data": "File",
-      "data_index": "File"
+        "name": "GRCh38",
+        "fasta": {
+            "data": "gs://pacbio-wdl/dataset/GRCh38/human_GRCh38_no_alt_analysis_set.fasta",
+            "data_index": "gs://pacbio-wdl/dataset/GRCh38/human_GRCh38_no_alt_analysis_set.fasta.fai"
+        }
+    },
+    {
+        "name": "chm13v2.0",
+        "fasta": {
+            "data": "gs://pacbio-wdl/dataset/CHM13/human_chm13v2.0_maskedY_rCRS.fasta",
+            "data_index": "gs://pacbio-wdl/dataset/CHM13/human_chm13v2.0_maskedY_rCRS.fasta.fai"
+        }
     }
   ],
   "de_novo_assembly.backend": "GCP",
