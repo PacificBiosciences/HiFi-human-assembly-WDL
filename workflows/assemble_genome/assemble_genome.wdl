@@ -173,6 +173,7 @@ task gfa2fa {
 		# Calculate assembly stats
 		k8 \
 			/opt/calN50/calN50.js \
+			-L3.1g \
 			~{gfa_basename}.fasta.gz \
 		> ~{gfa_basename}.fasta.stats.txt
 	>>>
