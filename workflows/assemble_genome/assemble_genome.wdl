@@ -41,24 +41,7 @@ workflow assemble_genome {
 				runtime_attributes = default_runtime_attributes 
 		}
 	}
-	
-	#scatter (ref in references) {
-	#	call align_hifiasm {
-#			input:
-#				sample_id = sample_id,
-#				query_sequences = gfa2fa.zipped_fasta,
-#				reference = ref.fasta.data,
-#				reference_name = ref.name,
-#				runtime_attributes = default_runtime_attributes
-#		}
-#
-#		IndexData sample_aligned_bam = {
-#			"data": align_hifiasm.asm_bam,
-#			"data_index": align_hifiasm.asm_bam_index
-#		}
 
-#		Pair[ReferenceData,IndexData] align_data = (ref, sample_aligned_bam)
-	#}
 
 	scatter (ref in references) {
 		scatter (hap in gfa2fa.zipped_fasta) {
@@ -276,16 +259,8 @@ task align_hifiasm {
 	>>>
 
 	output {
-#		String haplotype = read_string("hap.txt")
-#		File asm_bam = "~{sample_id}.~{haplotype}.asm.~{reference_name}.bam"
-#		File asm_bam_index = "~{sample_id}.~{haplotype}.asm.~{reference_name}.bam.bai"
-#		File asm_bam = "~{sample_id}.asm.~{reference_name}.bam"
-#		File asm_bam_index = "~{sample_id}.asm.~{reference_name}.bam.bai"
-
 		File asm_bam = glob("*.bam")[0]
 		File asm_bam_index = glob("*.bam.bai")[0]
-
-
 	}
 
 	runtime {

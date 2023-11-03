@@ -40,13 +40,6 @@ workflow de_novo_assembly_sample {
 	scatter (aln in assemble_genome.alignments) {
 		ReferenceData ref = aln.left
 		IndexData bam = aln.right
-#		call htsbox {
-#			input:
-#				bam = bam.data,
-#				bam_index = bam.data_index,
-#				reference = ref.fasta.data,
-#				runtime_attributes = default_runtime_attributes
-#		}
 
 		call paftools {
 			input:
@@ -73,7 +66,6 @@ workflow de_novo_assembly_sample {
 			input:
 				vcf = zip_index_vcf.zipped_vcf,
 				params = "--samples ~{sample.sample_id}",
-#				params = "--samples ~{basename(bam.data)}",
 				reference = ref.fasta.data,
 				runtime_attributes = default_runtime_attributes
 		}
@@ -152,41 +144,3 @@ task paftools {
 		zones: runtime_attributes.zones
 	}
 }
-
-task ref_group {
-	input {
-		Array[IndexData] bams
-		String sample_id
-		String refname
-
-		RuntimeAttributes runtime_attributes
-	}
-
-	Int threads = 3
-	Int disk_size = 20
-	Int mem_gb = threads * 8
-
-	command <<<
-	
-		echo "test"
-	>>>
-
-	output {
-		Array[File] bamlist = glob("*.bam")
-		String ref = refname
-	}
-
-	runtime {
-		docker: "~{runtime_attributes.container_registry}/align_hifiasm@sha256:0e8ad680b0e89376eb94fa8daa1a0269a4abe695ba39523a5c56a59d5c0e3953"
-		cpu: threads
-		memory: mem_gb + " GB"
-		disk: disk_size + " GB"
-		disks: "local-disk " + disk_size + " HDD"
-		preemptible: runtime_attributes.preemptible_tries
-		maxRetries: runtime_attributes.max_retries
-		awsBatchRetryAttempts: runtime_attributes.max_retries
-		queueArn: runtime_attributes.queue_arn
-		zones: runtime_attributes.zones
-	}
-}
-
