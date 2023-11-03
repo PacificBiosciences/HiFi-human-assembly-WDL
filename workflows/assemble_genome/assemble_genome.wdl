@@ -42,32 +42,63 @@ workflow assemble_genome {
 		}
 	}
 	
+	#scatter (ref in references) {
+	#	call align_hifiasm {
+#			input:
+#				sample_id = sample_id,
+#				query_sequences = gfa2fa.zipped_fasta,
+#				reference = ref.fasta.data,
+#				reference_name = ref.name,
+#				runtime_attributes = default_runtime_attributes
+#		}
+#
+#		IndexData sample_aligned_bam = {
+#			"data": align_hifiasm.asm_bam,
+#			"data_index": align_hifiasm.asm_bam_index
+#		}
+
+#		Pair[ReferenceData,IndexData] align_data = (ref, sample_aligned_bam)
+	#}
+
 	scatter (ref in references) {
-		call align_hifiasm {
+		scatter (hap in gfa2fa.zipped_fasta) {
+			call align_hifiasm {
+				input:
+					sample_id = sample_id,
+					query_sequences = hap,
+					reference = ref.fasta.data,
+					reference_name = ref.name,
+					runtime_attributes = default_runtime_attributes
+			}
+
+			IndexData sample_aligned_bam = {
+				"data": align_hifiasm.asm_bam,
+				"data_index": align_hifiasm.asm_bam_index
+			}
+
+			Pair[ReferenceData,IndexData] align_data = (ref, sample_aligned_bam)
+		}
+
+		Array[File] bamlist = align_hifiasm.asm_bam
+
+		call merge_haps {
 			input:
 				sample_id = sample_id,
-				query_sequences = gfa2fa.zipped_fasta,
-				reference = ref.fasta.data,
-				reference_name = ref.name,
+				bams = bamlist,
+				refname = ref.name,
 				runtime_attributes = default_runtime_attributes
 		}
 
-		IndexData sample_aligned_bam = {
-			"data": align_hifiasm.asm_bam,
-			"data_index": align_hifiasm.asm_bam_index
-		}
 
-		Pair[ReferenceData,IndexData] align_data = (ref, sample_aligned_bam)
 	}
-
-
 	output {
 		Array[File] assembly_noseq_gfas = hifiasm_assemble.assembly_noseq_gfas
 		Array[File] assembly_lowQ_beds = hifiasm_assemble.assembly_lowQ_beds
 		Array[File] zipped_assembly_fastas = gfa2fa.zipped_fasta
 		Array[File] assembly_stats = gfa2fa.assembly_stats
-		Array[IndexData] asm_bams = sample_aligned_bam
-		Array[Pair[ReferenceData,IndexData]] alignments = align_data
+		Array[IndexData] asm_bams = flatten(sample_aligned_bam)
+		Array[IndexData] merged_bams = merge_haps.merged_bam
+		Array[Pair[ReferenceData,IndexData]] alignments = flatten(align_data)
 	}
 
 	parameter_meta {
@@ -202,7 +233,7 @@ task gfa2fa {
 task align_hifiasm {
 	input {
 		String sample_id
-		Array[File] query_sequences
+		File query_sequences
 
 		File reference
 		String reference_name
@@ -215,10 +246,12 @@ task align_hifiasm {
 	Int disk_size = ceil((size(query_sequences, "GB") + size(reference, "GB")) * 2 + 20)
 
 	command <<<
-		set -euo pipefail
+
 
 		echo "minimap2 version: $(minimap2 --version)"
-		
+		haplotype=$(basename ~{query_sequences} | sed -n 's/.*\(hap.\).*/\1/p')
+		echo $haplotype > hap.txt
+
 		samtools --version
 
 		minimap2 \
@@ -226,6 +259,7 @@ task align_hifiasm {
 			-L \
 			--secondary=no \
 			--eqx \
+			--cs \
 			-a \
 			-x asm5 \
 			-R "@RG\\tID:~{sample_id}_hifiasm\\tSM:~{sample_id}" \
@@ -236,18 +270,71 @@ task align_hifiasm {
 			-T ./TMP \
 			-m 8G \
 			-O BAM \
-			-o ~{sample_id}.asm.~{reference_name}.bam
+			-o ~{sample_id}.$haplotype.asm.~{reference_name}.bam
 
-		samtools index ~{sample_id}.asm.~{reference_name}.bam
+		samtools index ~{sample_id}.$haplotype.asm.~{reference_name}.bam
 	>>>
 
 	output {
-		File asm_bam = "~{sample_id}.asm.~{reference_name}.bam"
-		File asm_bam_index = "~{sample_id}.asm.~{reference_name}.bam.bai"
+#		String haplotype = read_string("hap.txt")
+#		File asm_bam = "~{sample_id}.~{haplotype}.asm.~{reference_name}.bam"
+#		File asm_bam_index = "~{sample_id}.~{haplotype}.asm.~{reference_name}.bam.bai"
+#		File asm_bam = "~{sample_id}.asm.~{reference_name}.bam"
+#		File asm_bam_index = "~{sample_id}.asm.~{reference_name}.bam.bai"
+
+		File asm_bam = glob("*.bam")[0]
+		File asm_bam_index = glob("*.bam.bai")[0]
+
+
 	}
 
 	runtime {
-		docker: "~{runtime_attributes.container_registry}/align_hifiasm@sha256:3968cb152a65163005ffed46297127536701ec5af4c44e8f3e7051f7b01f80fe"
+		docker: "~{runtime_attributes.container_registry}/align_hifiasm@sha256:0e8ad680b0e89376eb94fa8daa1a0269a4abe695ba39523a5c56a59d5c0e3953"
+		cpu: threads
+		memory: mem_gb + " GB"
+		disk: disk_size + " GB"
+		disks: "local-disk " + disk_size + " HDD"
+		preemptible: runtime_attributes.preemptible_tries
+		maxRetries: runtime_attributes.max_retries
+		awsBatchRetryAttempts: runtime_attributes.max_retries
+		queueArn: runtime_attributes.queue_arn
+		zones: runtime_attributes.zones
+	}
+}
+
+task merge_haps {
+	input {
+		Array[File] bams
+		String sample_id
+		String refname
+		
+		RuntimeAttributes runtime_attributes
+	}
+
+	Int threads = 3
+	Int disk_size = 20
+	Int mem_gb = threads * 8
+	
+	command <<<
+
+		samtools merge \
+			-@3 \
+			-b \
+			-o ~{sample_id}.asm.~{refname}.bam \
+			~{sep=' ' bams} 
+
+		samtools index ~{sample_id}.asm.~{refname}.bam
+
+
+	>>>
+
+	output {
+		IndexData merged_bam = {"data": "~{sample_id}.asm.~{refname}.bam",
+								"data_index": "~{sample_id}.asm.~{refname}.bam.bai"}
+	}
+
+	runtime {
+		docker: "~{runtime_attributes.container_registry}/align_hifiasm@sha256:0e8ad680b0e89376eb94fa8daa1a0269a4abe695ba39523a5c56a59d5c0e3953"
 		cpu: threads
 		memory: mem_gb + " GB"
 		disk: disk_size + " GB"

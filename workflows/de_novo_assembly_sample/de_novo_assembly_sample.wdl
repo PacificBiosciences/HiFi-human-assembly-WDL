@@ -40,21 +40,31 @@ workflow de_novo_assembly_sample {
 	scatter (aln in assemble_genome.alignments) {
 		ReferenceData ref = aln.left
 		IndexData bam = aln.right
-		call htsbox {
+#		call htsbox {
+#			input:
+#				bam = bam.data,
+#				bam_index = bam.data_index,
+#				reference = ref.fasta.data,
+#				runtime_attributes = default_runtime_attributes
+#		}
+
+		call paftools {
 			input:
 				bam = bam.data,
+				sample = sample.sample_id,
 				bam_index = bam.data_index,
 				reference = ref.fasta.data,
 				runtime_attributes = default_runtime_attributes
 		}
 
+
 		call ZipIndexVcf.zip_index_vcf {
 			input:
-				vcf = htsbox.htsbox_vcf,
+				vcf = paftools.paftools_vcf,
 				runtime_attributes = default_runtime_attributes
 		}
 
-		IndexData htsbox_vcf = {
+		IndexData paftools_vcf = {
 			"data": zip_index_vcf.zipped_vcf, 
 			"data_index": zip_index_vcf.zipped_vcf_index
 		}
@@ -62,21 +72,27 @@ workflow de_novo_assembly_sample {
 		call BcftoolsStats.bcftools_stats {
 			input:
 				vcf = zip_index_vcf.zipped_vcf,
-				params = "--samples ~{basename(bam.data)}",				
+				params = "--samples ~{sample.sample_id}",
+#				params = "--samples ~{basename(bam.data)}",
 				reference = ref.fasta.data,
 				runtime_attributes = default_runtime_attributes
 		}
 
 	}
+
+	
 	output {
 		Array[File] assembly_noseq_gfas = assemble_genome.assembly_noseq_gfas
 		Array[File] assembly_lowQ_beds = assemble_genome.assembly_lowQ_beds
 		Array[File] zipped_assembly_fastas = assemble_genome.zipped_assembly_fastas
 		Array[File] assembly_stats = assemble_genome.assembly_stats
+		Array[IndexData] merged_bams = assemble_genome.merged_bams
 		Array[IndexData] asm_bams = assemble_genome.asm_bams
+	#	Array[File] paftools_vcfs = paftools.paftools_vcf
 
-		Array[IndexData] htsbox_vcfs = htsbox_vcf
-		Array[File] htsbox_vcf_stats = bcftools_stats.stats
+
+		Array[IndexData] paftools_vcfs = paftools_vcf
+		Array[File] paftools_vcf_stats = bcftools_stats.stats
 	}
 
 	parameter_meta {
@@ -87,45 +103,46 @@ workflow de_novo_assembly_sample {
 	}
 }
 
-task htsbox {
+task paftools {
 	input {
 		File bam
 		File bam_index
 
 		File reference
 
+		String sample
+
 		RuntimeAttributes runtime_attributes
 	}
 
 	String bam_basename = basename(bam, ".bam")
 	Int threads = 2
-	Int disk_size = ceil((size(bam, "GB") + size(reference, "GB")) * 3 + 200)
+	Int disk_size = ceil((size(bam, "GB") + size(reference, "GB")) * 3 + 20)
+	Int mem_gb = threads * 8
 
 	command <<<
 		set -euo pipefail
 
-		# Ensure the sample is named based on the bam basename (not the full path)
-		cp ~{bam} .
-
-		# htsbox has no version option; grep the version from the help output; ignore errors
-		htsbox 2>&1 | grep -Eo 'Version: htslib [0-9a-z-]+, htsbox [0-9a-z-]+' || true
-
-		htsbox pileup \
-			-q20 \
-			-c \
+		samtools view -h ~{bam} | \
+		k8 /opt/minimap2-2.17/misc/paftools.js sam2paf - | \
+		sort -k6,6 -k8,8n | \
+		k8 /opt/minimap2-2.17/misc/paftools.js call \
+			-L5000 \
 			-f ~{reference} \
-			~{basename(bam)} \
-		> ~{bam_basename}.htsbox.vcf
+			-s ~{sample} \
+			- \
+			> ~{bam_basename}.paftools.vcf
+
 	>>>
 
 	output {
-		File htsbox_vcf = "~{bam_basename}.htsbox.vcf"
+		File paftools_vcf = "~{bam_basename}.paftools.vcf"
 	}
 
 	runtime {
-		docker: "~{runtime_attributes.container_registry}/htsbox@sha256:740b7962584a582757ee9601719fa98403517db669037bc3946e9ecc5f970654"
+		docker: "~{runtime_attributes.container_registry}/align_hifiasm@sha256:0e8ad680b0e89376eb94fa8daa1a0269a4abe695ba39523a5c56a59d5c0e3953"
 		cpu: threads
-		memory: "14 GB"
+		memory: mem_gb + " GB"
 		disk: disk_size + " GB"
 		disks: "local-disk " + disk_size + " HDD"
 		preemptible: runtime_attributes.preemptible_tries
@@ -135,3 +152,41 @@ task htsbox {
 		zones: runtime_attributes.zones
 	}
 }
+
+task ref_group {
+	input {
+		Array[IndexData] bams
+		String sample_id
+		String refname
+
+		RuntimeAttributes runtime_attributes
+	}
+
+	Int threads = 3
+	Int disk_size = 20
+	Int mem_gb = threads * 8
+
+	command <<<
+	
+		echo "test"
+	>>>
+
+	output {
+		Array[File] bamlist = glob("*.bam")
+		String ref = refname
+	}
+
+	runtime {
+		docker: "~{runtime_attributes.container_registry}/align_hifiasm@sha256:0e8ad680b0e89376eb94fa8daa1a0269a4abe695ba39523a5c56a59d5c0e3953"
+		cpu: threads
+		memory: mem_gb + " GB"
+		disk: disk_size + " GB"
+		disks: "local-disk " + disk_size + " HDD"
+		preemptible: runtime_attributes.preemptible_tries
+		maxRetries: runtime_attributes.max_retries
+		awsBatchRetryAttempts: runtime_attributes.max_retries
+		queueArn: runtime_attributes.queue_arn
+		zones: runtime_attributes.zones
+	}
+}
+
