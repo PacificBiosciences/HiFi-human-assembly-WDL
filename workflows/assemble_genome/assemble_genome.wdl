@@ -247,7 +247,7 @@ task align_hifiasm {
 			-x asm5 \
 			-R "@RG\\tID:~{sample_id}_hifiasm\\tSM:~{sample_id}" \
 			~{reference} \
-			~{sep=' ' query_sequences} \
+			~{query_sequences} \
 		| samtools sort \
 			-@ 3 \
 			-T ./TMP \
