@@ -19,7 +19,7 @@
       "tasks": {
         "bcftools_stats": {
           "key": "bcftools_stats",
-          "digest": "hnaklilhvfhzokyogil55ymtufpzugdc",
+          "digest": "cu73ojtpnhesxaa2jh7a7l23vlieds3i",
           "tests": [
             {
               "inputs": {
@@ -49,7 +49,7 @@
       "tasks": {
         "zip_index_vcf": {
           "key": "zip_index_vcf",
-          "digest": "zglkxnubs7arukywr6dtr2rmlrs4l6si",
+          "digest": "cflenxzb6uj2ujfv4pkllo3vztdkev45",
           "tests": [
             {
               "inputs": {
@@ -79,7 +79,7 @@
       "tasks": {
         "samtools_fasta": {
           "key": "samtools_fasta",
-          "digest": "fzvpxhpi2a5nyyys7ktoirf4ww2exbe3",
+          "digest": "x336uu76d5c6nzls2vgntvoqrnhex5q4",
           "tests": [
             {
               "inputs": {
