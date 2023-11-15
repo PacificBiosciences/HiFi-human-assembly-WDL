@@ -233,7 +233,7 @@ task align_hifiasm {
 
 		echo "minimap2 version: $(minimap2 --version)"
 		haplotype=$(basename ~{query_sequences} | sed -n 's/.*\(hap.\).*/\1/p')
-		echo $haplotype > hap.txt
+		echo "$haplotype" > hap.txt
 
 		samtools --version
 
@@ -253,9 +253,9 @@ task align_hifiasm {
 			-T ./TMP \
 			-m 8G \
 			-O BAM \
-			-o ~{sample_id}.$haplotype.asm.~{reference_name}.bam
+			-o "~{sample_id}.$haplotype.asm.~{reference_name}.bam"
 
-		samtools index ~{sample_id}.$haplotype.asm.~{reference_name}.bam
+		samtools index "~{sample_id}.$haplotype.asm.~{reference_name}.bam"
 	>>>
 
 	output {
