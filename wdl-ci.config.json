@@ -269,17 +269,14 @@
             {
               "inputs": {
                 "sample_id": "HG005",
-                "query_sequences": [
-                  "${resources_file_path}/HG005.asm.bp.hap1.p_ctg.fasta.gz",
-                  "${resources_file_path}/HG005.asm.bp.hap2.p_ctg.fasta.gz"
-                ],
+                "query_sequences": "${resources_file_path}/HG005.asm.bp.hap1.p_ctg.fasta.gz",
                 "reference": "${datasets_file_path}/GRCh38/human_GRCh38_no_alt_analysis_set.fasta",
                 "reference_name": "GRCh38",
                 "runtime_attributes": "${default_runtime_attributes}"
               },
               "output_tests": {
                 "asm_bam": {
-                  "value": "${resources_file_path}/HG005.asm.GRCh38.bam",
+                  "value": "${resources_file_path}/HG005.hap1.asm.GRCh38.bam",
                   "test_tasks": [
                     "compare_file_basename",
                     "samtools_quickcheck",
