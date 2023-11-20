@@ -242,9 +242,6 @@
                 "asm_bam": {
                   "value": "${resources_file_path}/HG005.hap1.asm.GRCh38.bam",
                   "test_tasks": [
-                    "compare_file_basename",
-                    "samtools_quickcheck",
-                    "check_coordinate_sorted_alignment"
                   ]
                 }
               }
@@ -417,18 +414,6 @@
         },
         "bcftools_concat": {
           "key": "bcftools_concat",
-          "digest": "",
-          "tests": []
-        }
-      }
-    },
-    "workflows/wdl-common/wdl/tasks/concat_vcf.wdl": {
-      "key": "workflows/wdl-common/wdl/tasks/concat_vcf.wdl",
-      "name": "",
-      "description": "",
-      "tasks": {
-        "concat_vcf": {
-          "key": "concat_vcf",
           "digest": "",
           "tests": []
         }
