@@ -116,7 +116,9 @@ workflow de_novo_assembly_trio {
 		Array[Array[File]] assembly_lowQ_beds = flatten(assemble_genome.assembly_lowQ_beds)
 		Array[Array[File]] zipped_assembly_fastas = flatten(assemble_genome.zipped_assembly_fastas)
 		Array[Array[File]] assembly_stats = flatten(assemble_genome.assembly_stats)
-		Array[Array[IndexData]] asm_bams = flatten(assemble_genome.asm_bams)
+
+		Array[Array[IndexData]] merged_bams = flatten(assemble_genome.merged_bams)
+	
 	}
 
 	parameter_meta {

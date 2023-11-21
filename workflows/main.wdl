@@ -66,11 +66,7 @@ workflow de_novo_assembly {
 		Array[Array[File]?] zipped_assembly_fastas = de_novo_assembly_sample.zipped_assembly_fastas
 		Array[Array[File]?] assembly_stats = de_novo_assembly_sample.assembly_stats
 
-		#ORIGINAL - UNSURE OF THIS ONE
-		#Array[Array[IndexData]?] asm_bam = de_novo_assembly_sample.asm_bams
-		Array[Array[IndexData]?] asm_bam = de_novo_assembly_sample.asm_bams
 		Array[Array[IndexData]?] merged_bams = de_novo_assembly_sample.merged_bams
-
 		Array[Array[IndexData]?] paftools_vcf = de_novo_assembly_sample.paftools_vcfs
 		Array[Array[File]?] paftools_vcf_stats = de_novo_assembly_sample.paftools_vcf_stats
 
@@ -80,7 +76,7 @@ workflow de_novo_assembly {
 		Array[Array[File]]? trio_assembly_lowQ_beds = de_novo_assembly_trio.assembly_lowQ_beds
 		Array[Array[File]]? trio_zipped_assembly_fastas = de_novo_assembly_trio.zipped_assembly_fastas
 		Array[Array[File]]? trio_assembly_stats = de_novo_assembly_trio.assembly_stats
-		Array[Array[IndexData]]? trio_asm_bams = de_novo_assembly_trio.asm_bams
+		Array[Array[IndexData]]? trio_merged_asm_bams = de_novo_assembly_trio.merged_bams
 	}
 
 	parameter_meta {
