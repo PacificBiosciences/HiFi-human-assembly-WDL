@@ -33,21 +33,17 @@ See [the inputs section of the main README](../../README.md#workflow-inputs) for
 
 `cromwell run workflows/main.wdl -i <inputs_json_file>`
 
-### Running via Workbench
-
-1. [Register the engine in Workbench](https://docs.dnastack.com/docs/connecting-to-a-workflow-engine)
-2. [Follow the instructions in the README to run the workflow via Workbench](../../README.md#run-using-workbench)
-
 # Reference data bundle
 
-![https://doi.org/10.5281/zenodo.7922357](https://zenodo.org/badge/DOI/10.5281/zenodo.7922357.svg)
+10.5281/zenodo.10059671
+![https://doi.org/10.5281/zenodo.10059671](https://zenodo.org/badge/DOI/10.5281/zenodo.10059671.svg)
 
-Reference data is hosted on Zenodo at [10.5281/zenodo.7922357](https://zenodo.org/record/7922357).  Download the reference data bundle and extract it to a location on your HPC, then update the input template file with the path to the reference data.
+Reference data is hosted on Zenodo at [10.5281/zenodo.10059671](https://zenodo.org/record/10059671).  Download the reference data bundle and extract it to a location on your HPC, then update the input template file with the path to the reference data.
 
 ```bash
 # download the reference data bundle
-wget https://zenodo.org/record/7922357/files/wdl-humanwgs.v1.0.0.resources.tgz
+wget https://zenodo.org/record/10059671/files/wdl-humanassembly.v0.9.0.resource.tgz
 
 # extract the reference data bundle and rename as dataset
-tar -xzf wdl-humanwgs.v1.0.0.resources.tgz && mv static_resources dataset
+tar -xzf wdl-humanassembly.v9.9.0.resource.tgz && mv static_resources dataset
 ```
