@@ -22,7 +22,7 @@
         }
     },
     {
-        "name": "chm13v2.0",
+        "name": "chm13",
         "fasta": {
             "data": "/datasetpbrarediseases/dataset/CHM13/human_chm13v2.0_maskedY_rCRS.fasta",
             "data_index": "/datasetpbrarediseases/dataset/CHM13/human_chm13v2.0_maskedY_rCRS.fasta.fai"

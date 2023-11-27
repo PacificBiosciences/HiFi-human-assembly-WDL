@@ -22,7 +22,7 @@
         }
     },
     {
-        "name": "chm13v2.0",
+        "name": "chm13",
         "fasta": {
             "data": "<local_path_prefix>/dataset/CHM13/human_chm13v2.0_maskedY_rCRS.fasta",
             "data_index": "<local_path_prefix/dataset/CHM13/human_chm13v2.0_maskedY_rCRS.fasta.fai"
