@@ -86,7 +86,7 @@ workflow de_novo_assembly {
 
 	parameter_meta {
 		cohort: {help: "Sample information for the cohort"}
-		reference: {help: "Array of Reference genome data"}
+		references: {help: "Array of Reference genome data"}
 		backend: {help: "Backend where the workflow will be executed ['GCP', 'Azure', 'AWS', 'HPC']"}
 		zones: {help: "Zones where compute will take place; required if backend is set to 'AWS' or 'GCP'"}
 		aws_spot_queue_arn: {help: "Queue ARN for the spot batch queue; required if backend is set to 'AWS'"}
