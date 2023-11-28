@@ -1,0 +1,35 @@
+{
+  "de_novo_assembly.cohort": {
+    "cohort_id": "String",
+    "samples": [
+      {
+        "sample_id": "String",
+        "movie_bams": [
+          "File"
+        ],
+        "father_id": "String?",
+        "mother_id": "String?",
+        "run_de_novo_assembly": "Boolean"
+      }
+    ],
+    "run_de_novo_assembly_trio": "Boolean"
+  },
+  "de_novo_assembly.references": [
+    {
+        "name": "GRCh38",
+        "fasta": {
+            "data": "/datasetpbrarediseases/dataset/GRCh38/human_GRCh38_no_alt_analysis_set.fasta",
+            "data_index": "/datasetpbrarediseases/dataset/GRCh38/human_GRCh38_no_alt_analysis_set.fasta.fai"
+        }
+    },
+    {
+        "name": "chm13",
+        "fasta": {
+            "data": "/datasetpbrarediseases/dataset/CHM13/human_chm13v2.0_maskedY_rCRS.fasta",
+            "data_index": "/datasetpbrarediseases/dataset/CHM13/human_chm13v2.0_maskedY_rCRS.fasta.fai"
+        }
+    }
+  ],
+  "de_novo_assembly.backend": "Azure",
+  "de_novo_assembly.preemptible": "Boolean"
+}
