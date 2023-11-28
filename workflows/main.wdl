@@ -77,6 +77,11 @@ workflow de_novo_assembly {
 		Array[Array[File]]? trio_zipped_assembly_fastas = de_novo_assembly_trio.zipped_assembly_fastas
 		Array[Array[File]]? trio_assembly_stats = de_novo_assembly_trio.assembly_stats
 		Array[Array[IndexData]]? trio_merged_asm_bams = de_novo_assembly_trio.merged_bams
+
+		Array[Array[IndexData]]? trio_paftools_vcf = de_novo_assembly_trio.paftools_vcfs
+		Array[Array[File]]? trio_paftools_vcf_stats = de_novo_assembly_trio.paftools_vcf_stats
+
+
 	}
 
 	parameter_meta {

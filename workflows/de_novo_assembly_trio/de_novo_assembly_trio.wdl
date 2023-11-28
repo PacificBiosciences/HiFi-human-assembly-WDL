@@ -6,6 +6,8 @@ version 1.0
 import "../assembly_structs.wdl"
 import "../wdl-common/wdl/tasks/samtools_fasta.wdl" as SamtoolsFasta
 import "../assemble_genome/assemble_genome.wdl" as AssembleGenome
+import "../wdl-common/wdl/tasks/zip_index_vcf.wdl" as ZipIndexVcf
+import "../wdl-common/wdl/tasks/bcftools_stats.wdl" as BcftoolsStats
 
 workflow de_novo_assembly_trio {
 	input {
@@ -107,6 +109,42 @@ workflow de_novo_assembly_trio {
 					default_runtime_attributes = default_runtime_attributes,
 					on_demand_runtime_attributes = on_demand_runtime_attributes
 			}
+
+			scatter (aln in assemble_genome.alignments) {
+				ReferenceData ref = aln.left
+				IndexData bam = aln.right
+
+				call AssembleGenome.paftools {
+					input:
+						bam = bam.data,
+						sample = child.sample_id,
+						bam_index = bam.data_index,
+						reference = ref.fasta.data,
+						runtime_attributes = default_runtime_attributes
+				}
+
+
+				call ZipIndexVcf.zip_index_vcf {
+					input:
+						vcf = paftools.paftools_vcf,
+						runtime_attributes = default_runtime_attributes
+				}
+
+				IndexData paftools_vcf = {
+					"data": zip_index_vcf.zipped_vcf, 
+					"data_index": zip_index_vcf.zipped_vcf_index
+				}
+
+				call BcftoolsStats.bcftools_stats {
+					input:
+						vcf = zip_index_vcf.zipped_vcf,
+						params = "--samples ~{child.sample_id}",
+						reference = ref.fasta.data,
+						runtime_attributes = default_runtime_attributes
+				}
+
+			}
+
 		}
 	}
 
@@ -118,7 +156,9 @@ workflow de_novo_assembly_trio {
 		Array[Array[File]] assembly_stats = flatten(assemble_genome.assembly_stats)
 
 		Array[Array[IndexData]] merged_bams = flatten(assemble_genome.merged_bams)
-	
+		Array[Array[IndexData]] paftools_vcfs = flatten(paftools_vcf)
+		Array[Array[File]] paftools_vcf_stats = flatten(bcftools_stats.stats)
+
 	}
 
 	parameter_meta {
