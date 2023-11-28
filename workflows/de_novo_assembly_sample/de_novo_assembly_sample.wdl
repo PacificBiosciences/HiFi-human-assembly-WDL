@@ -79,7 +79,6 @@ workflow de_novo_assembly_sample {
 		Array[File] zipped_assembly_fastas = assemble_genome.zipped_assembly_fastas
 		Array[File] assembly_stats = assemble_genome.assembly_stats
 		Array[IndexData] merged_bams = assemble_genome.merged_bams
-		#Array[IndexData] asm_bams = assemble_genome.asm_bams
 
 		Array[IndexData] paftools_vcfs = paftools_vcf
 		Array[File] paftools_vcf_stats = bcftools_stats.stats

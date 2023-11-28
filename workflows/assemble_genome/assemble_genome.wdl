@@ -342,6 +342,8 @@ task paftools {
 	command <<<
 		set -euo pipefail
 
+		k8 /opt/minimap2-2.17/misc/paftools.js version
+
 		samtools view -h ~{bam} | \
 		k8 /opt/minimap2-2.17/misc/paftools.js sam2paf - | \
 		sort -k6,6 -k8,8n | \
