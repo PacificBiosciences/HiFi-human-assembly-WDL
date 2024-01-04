@@ -33,6 +33,19 @@ workflow assemble_genome {
 			runtime_attributes = assemble_runtime_attributes
 	}
 
+	String yak_params = "-b37"
+	Int yak_mem_gb = 50
+
+	# Count read kmers so we can check QV afterwards
+	call yak_count {
+		input:
+			sample_id = sample_id,
+			reads_fastas = reads_fastas,
+			yak_params = yak_params,
+			mem_gb = yak_mem_gb,
+			runtime_attributes = default_runtime_attributes
+	}
+
 	scatter (gfa in hifiasm_assemble.assembly_hap_gfas) {
 		# Convert gfa to zipped fasta; calculate assembly stats
 		call gfa2fa {
@@ -40,8 +53,16 @@ workflow assemble_genome {
 				gfa = gfa,
 				runtime_attributes = default_runtime_attributes 
 		}
-	}
 
+		call yak_qv {
+			input:
+				read_yak = yak_count.yak,
+				assembly = gfa2fa.zipped_fasta,
+				mem_gb = yak_mem_gb,
+				runtime_attributes = default_runtime_attributes
+
+		}
+	}
 
 	scatter (ref in references) {
 		scatter (hap in gfa2fa.zipped_fasta) {
@@ -82,6 +103,8 @@ workflow assemble_genome {
 		Array[IndexData] asm_bams = flatten(sample_aligned_bam)
 		Array[IndexData] merged_bams = merge_haps.merged_bam
 		Array[Pair[ReferenceData,IndexData]] alignments = flatten(align_data)
+		File yak_counts = yak_count.yak
+
 	}
 
 	parameter_meta {
@@ -362,6 +385,93 @@ task paftools {
 
 	runtime {
 		docker: "~{runtime_attributes.container_registry}/align_hifiasm@sha256:0e8ad680b0e89376eb94fa8daa1a0269a4abe695ba39523a5c56a59d5c0e3953"
+		cpu: threads
+		memory: mem_gb + " GB"
+		disk: disk_size + " GB"
+		disks: "local-disk " + disk_size + " HDD"
+		preemptible: runtime_attributes.preemptible_tries
+		maxRetries: runtime_attributes.max_retries
+		awsBatchRetryAttempts: runtime_attributes.max_retries
+		queueArn: runtime_attributes.queue_arn
+		zones: runtime_attributes.zones
+	}
+}
+
+task yak_count {
+	input {
+		String sample_id
+		Array[File] reads_fastas
+
+		String yak_params
+		Int mem_gb
+
+		RuntimeAttributes runtime_attributes
+	}
+
+	Int threads = 24
+	Int disk_size = ceil(size(reads_fastas, "GB") * 2 + 20)
+
+	command <<<
+		set -euo pipefail
+
+		echo "yak version: $(yak version)"
+
+		yak count \
+			-t ~{threads} \
+			-o ~{sample_id}.yak \
+			~{yak_params} \
+			~{sep=' ' reads_fastas}
+	>>>
+
+	output {
+		File yak = "~{sample_id}.yak"
+	}
+
+	runtime {
+		docker: "~{runtime_attributes.container_registry}/yak@sha256:45e344d9432cac713159c830a115f439c5daea3eeb732f107f608376f1ea2a6c"
+		cpu: threads
+		memory: mem_gb + " GB"
+		disk: disk_size + " GB"
+		disks: "local-disk " + disk_size + " HDD"
+		preemptible: runtime_attributes.preemptible_tries
+		maxRetries: runtime_attributes.max_retries
+		awsBatchRetryAttempts: runtime_attributes.max_retries
+		queueArn: runtime_attributes.queue_arn
+		zones: runtime_attributes.zones
+	}
+}
+
+
+task yak_qv {
+	input {
+		File read_yak
+		File assembly
+
+		Int mem_gb
+
+		RuntimeAttributes runtime_attributes
+	}
+
+	Int threads = 24
+	Int disk_size = ceil(size(assembly, "GB") * 2 + 20)
+
+	command <<<
+		set -euo pipefail
+
+		echo "yak version: $(yak version)"
+
+		yak qv \
+			-t ~{threads} \
+			-p ~{read_yak} \
+			~{assembly}
+	>>>
+
+	output {
+		File yak_qv_out = stdout()
+	}
+
+	runtime {
+		docker: "~{runtime_attributes.container_registry}/yak@sha256:45e344d9432cac713159c830a115f439c5daea3eeb732f107f608376f1ea2a6c"
 		cpu: threads
 		memory: mem_gb + " GB"
 		disk: disk_size + " GB"

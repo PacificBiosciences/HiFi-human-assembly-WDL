@@ -62,7 +62,7 @@ workflow de_novo_assembly_trio {
 		Int yak_mem_gb = if (low_depth) then 70 else 50
 		String hifiasm_extra_params = if (low_depth) then "-c1 -d1" else "-c2 -d5"
 
-		call yak_count as yak_count_father {
+		call AssembleGenome.yak_count as yak_count_father {
 			input:
 				sample_id = father.sample_id,
 				reads_fastas = samtools_fasta_father.reads_fasta,
@@ -71,7 +71,7 @@ workflow de_novo_assembly_trio {
 				runtime_attributes = default_runtime_attributes
 		}
 
-		call yak_count as yak_count_mother {
+		call AssembleGenome.yak_count as yak_count_mother {
 			input:
 				sample_id = mother.sample_id,
 				reads_fastas = samtools_fasta_mother.reads_fasta,
@@ -88,6 +88,17 @@ workflow de_novo_assembly_trio {
 
 		scatter (child_index in family.child_indices) {
 			Sample child = cohort.samples[child_index]
+
+			# Count child kmers for the post assembly QV check
+			call AssembleGenome.yak_count as yak_count_child {
+				input:
+					sample_id = child.sample_id,
+					reads_fastas = samtools_fasta_mother.reads_fasta,
+					yak_params = yak_params,
+					mem_gb = yak_mem_gb,
+					runtime_attributes = default_runtime_attributes
+			}
+
 
 			scatter (movie_bam in child.movie_bams) {
 				call SamtoolsFasta.samtools_fasta as samtools_fasta_child {
@@ -196,50 +207,6 @@ task parse_families {
 		memory: "4 GB"
 		disk: "20 GB"
 		disks: "local-disk " + "20" + " HDD"
-		preemptible: runtime_attributes.preemptible_tries
-		maxRetries: runtime_attributes.max_retries
-		awsBatchRetryAttempts: runtime_attributes.max_retries
-		queueArn: runtime_attributes.queue_arn
-		zones: runtime_attributes.zones
-	}
-}
-
-task yak_count {
-	input {
-		String sample_id
-		Array[File] reads_fastas
-
-		String yak_params
-		Int mem_gb
-
-		RuntimeAttributes runtime_attributes
-	}
-
-	Int threads = 24
-	Int disk_size = ceil(size(reads_fastas, "GB") * 2 + 20)
-
-	command <<<
-		set -euo pipefail
-
-		echo "yak version: $(yak version)"
-
-		yak count \
-			-t ~{threads} \
-			-o ~{sample_id}.yak \
-			~{yak_params} \
-			~{sep=' ' reads_fastas}
-	>>>
-
-	output {
-		File yak = "~{sample_id}.yak"
-	}
-
-	runtime {
-		docker: "~{runtime_attributes.container_registry}/yak@sha256:45e344d9432cac713159c830a115f439c5daea3eeb732f107f608376f1ea2a6c"
-		cpu: threads
-		memory: mem_gb + " GB"
-		disk: disk_size + " GB"
-		disks: "local-disk " + disk_size + " HDD"
 		preemptible: runtime_attributes.preemptible_tries
 		maxRetries: runtime_attributes.max_retries
 		awsBatchRetryAttempts: runtime_attributes.max_retries
