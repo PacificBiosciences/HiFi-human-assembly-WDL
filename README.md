@@ -2,8 +2,6 @@
 
 <h1 align="center">PacBio Human Assembly pipeline</h1>
 
-# wdl-humanassembly
-
 Workflow for running de novo assembly using human PacBio whole genome sequencing (WGS) data. Written using [Workflow Description Language (WDL)](https://openwdl.org/).
 
 - Docker images used by these workflows are defined [here](https://github.com/PacificBiosciences/wdl-dockerfiles).
