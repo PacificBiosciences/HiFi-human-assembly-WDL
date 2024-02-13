@@ -17,7 +17,14 @@ The assembly workflow performs _de novo_ assembly on samples and trios.
 
 ## Setup
 
-Some tasks and workflows are pulled in from other repositories. Ensure you have initialized submodules following cloning by running `git submodule update --init --recursive`.
+We recommend cloning the repo rather than downloading the release package.
+ 
+```git clone \
+  --depth 1 --branch v1.1.0 \  # for reproducibility
+  --recursive \                # to clone submodule
+  https://github.com/PacificBiosciences/HiFi-human-assembly-WDL.git
+```
+
 
 ## Resource requirements
 
@@ -115,7 +122,7 @@ A cohort can include one or more samples. Samples need not be related.
 
 | Type | Name | Description | Notes |
 | :- | :- | :- | :- |
-| String | cohort_id | A unique name for the cohort; used to name outputs | |
+| String | cohort_id | A unique name for the cohort; used to name outputs. Alphanumeric characters, underscore (_), and dash (-) are allowed. | |
 | Array[[Sample](#sample)] | samples | The set of samples for the cohort. At least one sample must be defined. | |
 | Boolean | run_de_novo_assembly_trio | Run trio binned _de novo_ assembly. | Cohort must contain at least one valid trio (child and both parents present in the cohort) |
 
@@ -125,10 +132,10 @@ Sample information for each sample in the workflow run.
 
 | Type | Name | Description | Notes |
 | :- | :- | :- | :- |
-| String | sample_id | A unique name for the sample; used to name outputs | |
+| String | sample_id | A unique name for the sample; used to name outputs. Alphanumeric characters, underscore (_), and dash (-) are allowed | |
 | Array[[IndexData](https://github.com/PacificBiosciences/wdl-common/blob/main/wdl/structs.wdl)] | movie_bams | The set of unaligned movie BAMs associated with this sample | |
-| String? | father_id | Paternal `sample_id` | |
-| String? | mother_id | Maternal `sample_id` | |
+| String? | father_id | Paternal `sample_id`. Alphanumeric characters, underscore (_), and dash (-) are allowed. | |
+| String? | mother_id | Maternal `sample_id`. Alphanumeric characters, underscore (_), and dash (-) are allowed. | |
 | Boolean | run_de_novo_assembly | If true, run single-sample _de novo_ assembly for this sample | \[true, false\] |
 
 ## [ReferenceData](workflows/humanwgs_structs.wdl)
