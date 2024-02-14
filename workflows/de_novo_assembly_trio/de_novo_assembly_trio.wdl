@@ -191,7 +191,7 @@ task parse_families {
 	}
 
 	runtime {
-		docker: "~{runtime_attributes.container_registry}/parse-cohort@sha256:e6a8ac24ada706644e62878178790a0006db9a6abec7a312232052bb0666fe8f"
+		docker: "~{runtime_attributes.container_registry}/pyyaml@sha256:af6f0689a7412b1edf76bd4bf6434e7fa6a86192eebf19573e8618880d9c1dbb"
 		cpu: 2
 		memory: "4 GB"
 		disk: "20 GB"

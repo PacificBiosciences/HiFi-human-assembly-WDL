@@ -17,7 +17,7 @@ The assembly workflow performs _de novo_ assembly on samples and trios.
 
 ## Setup
 
-We recommend cloning the repo rather than downloading the release package.
+Clone a tagged version of the git repository.  Use the `--branch` flag to pull the desired version, and the `--recursive` flag to pull code from any submodules.
  
 ```git clone \
   --depth 1 --branch v1.0.0 \  # for reproducibility
@@ -122,7 +122,7 @@ A cohort can include one or more samples. Samples need not be related.
 
 | Type | Name | Description | Notes |
 | :- | :- | :- | :- |
-| String | cohort_id | A unique name for the cohort; used to name outputs. Alphanumeric characters, underscore (_), and dash (-) are allowed. | |
+| String | cohort_id | A unique name for the cohort; used to name outputs. Alphanumeric characters, underscore (`_`), and dash (`-`) are allowed. | |
 | Array[[Sample](#sample)] | samples | The set of samples for the cohort. At least one sample must be defined. | |
 | Boolean | run_de_novo_assembly_trio | Run trio binned _de novo_ assembly. | Cohort must contain at least one valid trio (child and both parents present in the cohort) |
 
@@ -132,10 +132,10 @@ Sample information for each sample in the workflow run.
 
 | Type | Name | Description | Notes |
 | :- | :- | :- | :- |
-| String | sample_id | A unique name for the sample; used to name outputs. Alphanumeric characters, underscore (_), and dash (-) are allowed | |
+| String | sample_id | A unique name for the sample; used to name outputs. Alphanumeric characters, underscore (`_`), and dash (`-`) are allowed | |
 | Array[[IndexData](https://github.com/PacificBiosciences/wdl-common/blob/main/wdl/structs.wdl)] | movie_bams | The set of unaligned movie BAMs associated with this sample | |
-| String? | father_id | Paternal `sample_id`. Alphanumeric characters, underscore (_), and dash (-) are allowed. | |
-| String? | mother_id | Maternal `sample_id`. Alphanumeric characters, underscore (_), and dash (-) are allowed. | |
+| String? | father_id | Paternal `sample_id`. Alphanumeric characters, underscore (`_`), and dash (`-`) are allowed. | |
+| String? | mother_id | Maternal `sample_id`. Alphanumeric characters, underscore (`_`), and dash (`-`) are allowed. | |
 | Boolean | run_de_novo_assembly | If true, run single-sample _de novo_ assembly for this sample | \[true, false\] |
 
 ## [ReferenceData](workflows/humanwgs_structs.wdl)
@@ -204,7 +204,7 @@ The Docker image used by a particular step of the workflow can be identified by 
 | hifiasm | <ul><li>[hifiasm 0.19.4](https://github.com/chhylp123/hifiasm/releases/tag/0.19.4)</li></ul> | [Dockerfile](https://github.com/PacificBiosciences/wdl-dockerfiles/tree/3560fcc5a84e044067cea9c9a7669cfc2659178e/docker/hifiasm) |
 | htslib | <ul><li>[htslib 1.14](https://github.com/samtools/htslib/releases/tag/1.14)</li></ul> | [Dockerfile](https://github.com/PacificBiosciences/wdl-dockerfiles/tree/3560fcc5a84e044067cea9c9a7669cfc2659178e/docker/htslib) |
 | paftools | <ul><li>[paftools 2.26-r1182-dirty](https://github.com/lh3/minimap2/blob/bc588c0eeb26426d0d90a93fb0877358a389c515/misc/paftools.js)</li></ul> | [Dockerfile](https://github.com/PacificBiosciences/wdl-dockerfiles/tree/3560fcc5a84e044067cea9c9a7669cfc2659178e/docker/align_hifiasm) |
-| parse-cohort | <ul><li>python 3.8.10; custom scripts</li></ul> | [Dockerfile](https://github.com/PacificBiosciences/wdl-dockerfiles/tree/3560fcc5a84e044067cea9c9a7669cfc2659178e/docker/parse-cohort) |
+| pyyaml | <ul><li>python 3.8.10; custom scripts</li></ul> | [Dockerfile](https://github.com/PacificBiosciences/wdl-dockerfiles/tree/f72e862bca2f209b9909e6043ef0197975762f27/docker/pyyaml) |
 | samtools | <ul><li>[samtools 1.14](https://github.com/samtools/samtools/releases/tag/1.14)</li></ul> | [Dockerfile](https://github.com/PacificBiosciences/wdl-dockerfiles/tree/3560fcc5a84e044067cea9c9a7669cfc2659178e/docker/samtools) |
 | yak | <ul><li>[yak 0.1](https://github.com/lh3/yak/releases/tag/v0.1)</li></ul> | [Dockerfile](https://github.com/PacificBiosciences/wdl-dockerfiles/tree/3560fcc5a84e044067cea9c9a7669cfc2659178e/docker/yak) |
 
