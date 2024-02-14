@@ -20,7 +20,7 @@ The assembly workflow performs _de novo_ assembly on samples and trios.
 We recommend cloning the repo rather than downloading the release package.
  
 ```git clone \
-  --depth 1 --branch v1.1.0 \  # for reproducibility
+  --depth 1 --branch v1.0.0 \  # for reproducibility
   --recursive \                # to clone submodule
   https://github.com/PacificBiosciences/HiFi-human-assembly-WDL.git
 ```
