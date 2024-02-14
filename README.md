@@ -132,7 +132,7 @@ Sample information for each sample in the workflow run.
 
 | Type | Name | Description | Notes |
 | :- | :- | :- | :- |
-| String | sample_id | A unique name for the sample; used to name outputs. Alphanumeric characters, underscore (_), and dash (-) are allowed | |
+| String | sample_id | A unique name for the sample; used to name outputs. Alphanumeric characters, underscore (`_`), and dash (`-`) are allowed | |
 | Array[[IndexData](https://github.com/PacificBiosciences/wdl-common/blob/main/wdl/structs.wdl)] | movie_bams | The set of unaligned movie BAMs associated with this sample | |
 | String? | father_id | Paternal `sample_id`. Alphanumeric characters, underscore (`_`), and dash (`-`) are allowed. | |
 | String? | mother_id | Maternal `sample_id`. Alphanumeric characters, underscore (`_`), and dash (`-`) are allowed. | |
