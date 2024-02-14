@@ -134,8 +134,8 @@ Sample information for each sample in the workflow run.
 | :- | :- | :- | :- |
 | String | sample_id | A unique name for the sample; used to name outputs. Alphanumeric characters, underscore (_), and dash (-) are allowed | |
 | Array[[IndexData](https://github.com/PacificBiosciences/wdl-common/blob/main/wdl/structs.wdl)] | movie_bams | The set of unaligned movie BAMs associated with this sample | |
-| String? | father_id | Paternal `sample_id`. Alphanumeric characters, underscore (_), and dash (-) are allowed. | |
-| String? | mother_id | Maternal `sample_id`. Alphanumeric characters, underscore (_), and dash (-) are allowed. | |
+| String? | father_id | Paternal `sample_id`. Alphanumeric characters, underscore (`_`), and dash (`-`) are allowed. | |
+| String? | mother_id | Maternal `sample_id`. Alphanumeric characters, underscore (`_`), and dash (`-`) are allowed. | |
 | Boolean | run_de_novo_assembly | If true, run single-sample _de novo_ assembly for this sample | \[true, false\] |
 
 ## [ReferenceData](workflows/humanwgs_structs.wdl)
