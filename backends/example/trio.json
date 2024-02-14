@@ -1,0 +1,34 @@
+{
+    "de_novo_assembly.cohort": {
+        "cohort_id": "HG002",
+        "samples": [
+            {
+                "father_id": "HG003",
+                "mother_id": "HG004",
+                "movie_bams": [
+                    "/path/to/sampleA_1.bam",
+                    "/path/to/sampleA_2.bam"
+                ],
+                "run_de_novo_assembly": false,
+                "sample_id": "HG002"
+            },
+            {
+                "movie_bams": [
+                    "/path/to/sampleB_1.bam",
+                    "/path/to/sampleB_2.bam"
+                ],
+                "run_de_novo_assembly": true,
+                "sample_id": "HG003"
+            },
+            {
+                "movie_bams": [
+                    "/path/to/sampleC_1.bam",
+                    "/path/to/sampleC_2.bam"
+                ],
+                "run_de_novo_assembly": true,
+                "sample_id": "HG004"
+            }
+        ],
+        "run_de_novo_assembly_trio": true
+    }
+}

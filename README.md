@@ -1,8 +1,6 @@
-# DISCLAIMER
+<h1 align="center"><img width="300px" src="images/logo_wdl_workflows.svg"/></h1>
 
-TO THE GREATEST EXTENT PERMITTED BY APPLICABLE LAW, THIS WEBSITE AND ITS CONTENT, INCLUDING ALL SOFTWARE, SOFTWARE CODE, SITE-RELATED SERVICES, AND DATA, ARE PROVIDED "AS IS," WITH ALL FAULTS, WITH NO REPRESENTATIONS OR WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, ANY WARRANTIES OF MERCHANTABILITY, SATISFACTORY QUALITY, NON-INFRINGEMENT OR FITNESS FOR A PARTICULAR PURPOSE. ALL WARRANTIES ARE REJECTED AND DISCLAIMED. YOU ASSUME TOTAL RESPONSIBILITY AND RISK FOR YOUR USE OF THE FOREGOING. PACBIO IS NOT OBLIGATED TO PROVIDE ANY SUPPORT FOR ANY OF THE FOREGOING, AND ANY SUPPORT PACBIO DOES PROVIDE IS SIMILARLY PROVIDED WITHOUT REPRESENTATION OR WARRANTY OF ANY KIND. NO ORAL OR WRITTEN INFORMATION OR ADVICE SHALL CREATE A REPRESENTATION OR WARRANTY OF ANY KIND. ANY REFERENCES TO SPECIFIC PRODUCTS OR SERVICES ON THE WEBSITES DO NOT CONSTITUTE OR IMPLY A RECOMMENDATION OR ENDORSEMENT BY PACBIO.
-
-# wdl-humanassembly
+<h1 align="center">PacBio Human Assembly pipeline</h1>
 
 Workflow for running de novo assembly using human PacBio whole genome sequencing (WGS) data. Written using [Workflow Description Language (WDL)](https://openwdl.org/).
 
@@ -15,11 +13,19 @@ Workflow for running de novo assembly using human PacBio whole genome sequencing
 
 The assembly workflow performs _de novo_ assembly on samples and trios.
 
-![De novo assembly workflow diagram](workflows/main.graphviz.svg "De novo assembly workflow diagram")
+![De novo assembly workflow diagram](images/main.graphviz.svg "De novo assembly workflow diagram")
 
 ## Setup
 
-Some tasks and workflows are pulled in from other repositories. Ensure you have initialized submodules following cloning by running `git submodule update --init --recursive`.
+Clone a tagged version of the git repository.  Use the `--branch` flag to pull the desired version, and the `--recursive` flag to pull code from any submodules.
+ 
+```
+git clone \
+  --depth 1 --branch v1.0.0 \  # for reproducibility
+  --recursive \                # to clone submodule
+  https://github.com/PacificBiosciences/HiFi-human-assembly-WDL.git
+```
+
 
 ## Resource requirements
 
@@ -47,9 +53,11 @@ For backend-specific configuration, see the relevant documentation:
 - [GCP](backends/gcp)
 - [HPC](backends/hpc)
 
-## Configuring a workflow engine
+## Configuring a workflow engine and container runtime
 
 An execution engine is required to run workflows. Two popular engines for running WDL-based workflows are [`miniwdl`](https://miniwdl.readthedocs.io/en/latest/getting_started.html) and [`Cromwell`](https://cromwell.readthedocs.io/en/stable/tutorials/FiveMinuteIntro/).
+
+Because workflow dependencies are containerized, a container runtime is required. This workflow has been tested with [Docker](https://docs.docker.com/get-docker/) and [Singularity](https://docs.sylabs.io/guides/3.10/user-guide/) container runtimes.
 
 See [backend-specific documentation](backends) for details on setting up an engine.
 
@@ -115,7 +123,7 @@ A cohort can include one or more samples. Samples need not be related.
 
 | Type | Name | Description | Notes |
 | :- | :- | :- | :- |
-| String | cohort_id | A unique name for the cohort; used to name outputs | |
+| String | cohort_id | A unique name for the cohort; used to name outputs. Alphanumeric characters, underscore (`_`), and dash (`-`) are allowed. | |
 | Array[[Sample](#sample)] | samples | The set of samples for the cohort. At least one sample must be defined. | |
 | Boolean | run_de_novo_assembly_trio | Run trio binned _de novo_ assembly. | Cohort must contain at least one valid trio (child and both parents present in the cohort) |
 
@@ -125,10 +133,10 @@ Sample information for each sample in the workflow run.
 
 | Type | Name | Description | Notes |
 | :- | :- | :- | :- |
-| String | sample_id | A unique name for the sample; used to name outputs | |
+| String | sample_id | A unique name for the sample; used to name outputs. Alphanumeric characters, underscore (`_`), and dash (`-`) are allowed | |
 | Array[[IndexData](https://github.com/PacificBiosciences/wdl-common/blob/main/wdl/structs.wdl)] | movie_bams | The set of unaligned movie BAMs associated with this sample | |
-| String? | father_id | Paternal `sample_id` | |
-| String? | mother_id | Maternal `sample_id` | |
+| String? | father_id | Paternal `sample_id`. Alphanumeric characters, underscore (`_`), and dash (`-`) are allowed. | |
+| String? | mother_id | Maternal `sample_id`. Alphanumeric characters, underscore (`_`), and dash (`-`) are allowed. | |
 | Boolean | run_de_novo_assembly | If true, run single-sample _de novo_ assembly for this sample | \[true, false\] |
 
 ## [ReferenceData](workflows/humanwgs_structs.wdl)
@@ -197,6 +205,12 @@ The Docker image used by a particular step of the workflow can be identified by 
 | hifiasm | <ul><li>[hifiasm 0.19.4](https://github.com/chhylp123/hifiasm/releases/tag/0.19.4)</li></ul> | [Dockerfile](https://github.com/PacificBiosciences/wdl-dockerfiles/tree/3560fcc5a84e044067cea9c9a7669cfc2659178e/docker/hifiasm) |
 | htslib | <ul><li>[htslib 1.14](https://github.com/samtools/htslib/releases/tag/1.14)</li></ul> | [Dockerfile](https://github.com/PacificBiosciences/wdl-dockerfiles/tree/3560fcc5a84e044067cea9c9a7669cfc2659178e/docker/htslib) |
 | paftools | <ul><li>[paftools 2.26-r1182-dirty](https://github.com/lh3/minimap2/blob/bc588c0eeb26426d0d90a93fb0877358a389c515/misc/paftools.js)</li></ul> | [Dockerfile](https://github.com/PacificBiosciences/wdl-dockerfiles/tree/3560fcc5a84e044067cea9c9a7669cfc2659178e/docker/align_hifiasm) |
-| parse-cohort | <ul><li>python 3.8.10; custom scripts</li></ul> | [Dockerfile](https://github.com/PacificBiosciences/wdl-dockerfiles/tree/3560fcc5a84e044067cea9c9a7669cfc2659178e/docker/parse-cohort) |
+| pyyaml | <ul><li>python 3.8.10; custom scripts</li></ul> | [Dockerfile](https://github.com/PacificBiosciences/wdl-dockerfiles/tree/f72e862bca2f209b9909e6043ef0197975762f27/docker/pyyaml) |
 | samtools | <ul><li>[samtools 1.14](https://github.com/samtools/samtools/releases/tag/1.14)</li></ul> | [Dockerfile](https://github.com/PacificBiosciences/wdl-dockerfiles/tree/3560fcc5a84e044067cea9c9a7669cfc2659178e/docker/samtools) |
 | yak | <ul><li>[yak 0.1](https://github.com/lh3/yak/releases/tag/v0.1)</li></ul> | [Dockerfile](https://github.com/PacificBiosciences/wdl-dockerfiles/tree/3560fcc5a84e044067cea9c9a7669cfc2659178e/docker/yak) |
+
+---
+
+## DISCLAIMER
+
+TO THE GREATEST EXTENT PERMITTED BY APPLICABLE LAW, THIS WEBSITE AND ITS CONTENT, INCLUDING ALL SOFTWARE, SOFTWARE CODE, SITE-RELATED SERVICES, AND DATA, ARE PROVIDED "AS IS," WITH ALL FAULTS, WITH NO REPRESENTATIONS OR WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, ANY WARRANTIES OF MERCHANTABILITY, SATISFACTORY QUALITY, NON-INFRINGEMENT OR FITNESS FOR A PARTICULAR PURPOSE. ALL WARRANTIES ARE REJECTED AND DISCLAIMED. YOU ASSUME TOTAL RESPONSIBILITY AND RISK FOR YOUR USE OF THE FOREGOING. PACBIO IS NOT OBLIGATED TO PROVIDE ANY SUPPORT FOR ANY OF THE FOREGOING, AND ANY SUPPORT PACBIO DOES PROVIDE IS SIMILARLY PROVIDED WITHOUT REPRESENTATION OR WARRANTY OF ANY KIND. NO ORAL OR WRITTEN INFORMATION OR ADVICE SHALL CREATE A REPRESENTATION OR WARRANTY OF ANY KIND. ANY REFERENCES TO SPECIFIC PRODUCTS OR SERVICES ON THE WEBSITES DO NOT CONSTITUTE OR IMPLY A RECOMMENDATION OR ENDORSEMENT BY PACBIO.

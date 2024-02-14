@@ -1,0 +1,17 @@
+{
+  "de_novo_assembly.cohort": {
+    "cohort_id": "HG002",
+    "samples": [
+      {
+        "movie_bams": [
+          "/path/to/input1.bam",
+          "/path/to/input2.bam",
+          "/path/to/input3.bam"
+        ],
+        "run_de_novo_assembly": true,
+        "sample_id": "HG002"
+      }
+    ],
+    "run_de_novo_assembly_trio": false
+  }
+}
