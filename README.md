@@ -19,7 +19,8 @@ The assembly workflow performs _de novo_ assembly on samples and trios.
 
 Clone a tagged version of the git repository.  Use the `--branch` flag to pull the desired version, and the `--recursive` flag to pull code from any submodules.
  
-```git clone \
+```
+git clone \
   --depth 1 --branch v1.0.0 \  # for reproducibility
   --recursive \                # to clone submodule
   https://github.com/PacificBiosciences/HiFi-human-assembly-WDL.git
