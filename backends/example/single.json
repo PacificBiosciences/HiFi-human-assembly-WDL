@@ -3,8 +3,6 @@
     "cohort_id": "HG002",
     "samples": [
       {
-        "father_id": "HG003",
-        "mother_id": "HG004",
         "movie_bams": [
           "/path/to/input1.bam",
           "/path/to/input2.bam",

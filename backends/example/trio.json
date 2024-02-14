@@ -13,8 +13,6 @@
                 "sample_id": "HG002"
             },
             {
-                "father_id": "",
-                "mother_id": "",
                 "movie_bams": [
                     "/path/to/sampleB_1.bam",
                     "/path/to/sampleB_2.bam"
@@ -23,8 +21,6 @@
                 "sample_id": "HG003"
             },
             {
-                "father_id": "",
-                "mother_id": "",
                 "movie_bams": [
                     "/path/to/sampleC_1.bam",
                     "/path/to/sampleC_2.bam"
