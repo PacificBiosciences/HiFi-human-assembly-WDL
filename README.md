@@ -122,7 +122,7 @@ A cohort can include one or more samples. Samples need not be related.
 
 | Type | Name | Description | Notes |
 | :- | :- | :- | :- |
-| String | cohort_id | A unique name for the cohort; used to name outputs. Alphanumeric characters, underscore (_), and dash (-) are allowed. | |
+| String | cohort_id | A unique name for the cohort; used to name outputs. Alphanumeric characters, underscore (`_`), and dash (`-`) are allowed. | |
 | Array[[Sample](#sample)] | samples | The set of samples for the cohort. At least one sample must be defined. | |
 | Boolean | run_de_novo_assembly_trio | Run trio binned _de novo_ assembly. | Cohort must contain at least one valid trio (child and both parents present in the cohort) |
 
