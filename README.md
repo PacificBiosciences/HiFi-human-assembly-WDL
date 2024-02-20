@@ -1,6 +1,6 @@
 <h1 align="center"><img width="300px" src="https://github.com/PacificBiosciences/HiFi-human-assembly-WDL/raw/main/images/logo_wdl_workflows.svg"/></h1>
 
-<h1 align="center">PacBio Human Assembly pipeline</h1>
+<h1 align="center">PacBio Human Assembly Pipeline</h1>
 
 Workflow for running de novo assembly using human PacBio whole genome sequencing (WGS) data. Written using [Workflow Description Language (WDL)](https://openwdl.org/).
 
