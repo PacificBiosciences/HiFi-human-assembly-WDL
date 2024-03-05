@@ -1,4 +1,4 @@
-<h1 align="center"><img width="300px" src="images/logo_wdl_workflows.svg"/></h1>
+<h1 align="center"><img width="300px" src="https://github.com/PacificBiosciences/HiFi-human-assembly-WDL/raw/main/images/logo_wdl_workflows.svg"/></h1>
 
 <h1 align="center">PacBio Human Assembly Pipeline</h1>
 
@@ -13,7 +13,7 @@ Workflow for running de novo assembly using human PacBio whole genome sequencing
 
 The assembly workflow performs _de novo_ assembly on samples and trios.
 
-![De novo assembly workflow diagram](images/main.graphviz.svg "De novo assembly workflow diagram")
+![De novo assembly workflow diagram](https://github.com/PacificBiosciences/HiFi-human-assembly-WDL/raw/main/images/main.graphviz.svg "De novo assembly workflow diagram")
 
 ## Setup
 
@@ -21,7 +21,7 @@ Clone a tagged version of the git repository.  Use the `--branch` flag to pull t
  
 ```
 git clone \
-  --depth 1 --branch v1.0.0 \  # for reproducibility
+  --depth 1 --branch v1.0.1 \  # for reproducibility
   --recursive \                # to clone submodule
   https://github.com/PacificBiosciences/HiFi-human-assembly-WDL.git
 ```
