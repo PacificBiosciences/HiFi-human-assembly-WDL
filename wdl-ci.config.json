@@ -79,7 +79,7 @@
       "tasks": {
         "parse_families": {
           "key": "parse_families",
-          "digest": "rbuiru23pdiayrbc4zmrqcjyqay4c2aa",
+          "digest": "rsrm6ovjkccljzmidg7yuioyusx3pt2r",
           "tests": [
             {
               "inputs": {
