@@ -294,7 +294,6 @@ task merge_haps {
 
 		samtools merge \
 			-@3 \
-			-b \
 			-o ~{sample_id}.asm.~{refname}.bam \
 			~{sep=' ' bams} 
 
