@@ -79,7 +79,7 @@
       "tasks": {
         "parse_families": {
           "key": "parse_families",
-          "digest": "rbuiru23pdiayrbc4zmrqcjyqay4c2aa",
+          "digest": "rsrm6ovjkccljzmidg7yuioyusx3pt2r",
           "tests": [
             {
               "inputs": {
@@ -468,8 +468,8 @@
       "enabled": false,
       "name": "PacBio CoA installation"
     },
-    "abc123": {
-      "key": "abc123",
+    "pacbio-hpc": {
+      "key": "pacbio-hpc",
       "enabled": true,
       "name": "pacbio-hpc"
     }
@@ -499,7 +499,7 @@
         "resources_file_path": "/coac74908838b5dd7/inputs/wdl-ci/humanassembly",
         "datasets_file_path": "/datasetpbrarediseases/dataset"
       },
-      "abc123": {
+      "pacbio-hpc": {
         "input_file_path": "/pbi/collections/appslabht/cromwell_output/testdata/inputs/chr6.p23",
         "resources_file_path": "/pbi/collections/appslabht/cromwell_output/testdata/wdl-ci/humanassembly",
         "datasets_file_path": "/pbi/collections/appslabht/cromwell_output/testdata/datasetpbrarediseases/dataset"
