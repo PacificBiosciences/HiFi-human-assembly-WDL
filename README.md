@@ -21,7 +21,7 @@ Clone a tagged version of the git repository.  Use the `--branch` flag to pull t
  
 ```
 git clone \
-  --depth 1 --branch v1.0.1 \  # for reproducibility
+  --depth 1 --branch v1.0.2 \  # for reproducibility
   --recursive \                # to clone submodule
   https://github.com/PacificBiosciences/HiFi-human-assembly-WDL.git
 ```
