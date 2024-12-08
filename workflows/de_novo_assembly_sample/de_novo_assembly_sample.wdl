@@ -14,9 +14,7 @@ workflow de_novo_assembly_sample {
 
 		Array[ReferenceData] references
 
-		String backend
 		RuntimeAttributes default_runtime_attributes
-		RuntimeAttributes on_demand_runtime_attributes
 	}
 
 	scatter (movie_bam in sample.movie_bams) {
@@ -32,9 +30,7 @@ workflow de_novo_assembly_sample {
 			sample_id = sample.sample_id,
 			reads_fastas = samtools_fasta.reads_fasta,
 			references = references,
-			backend = backend,
-			default_runtime_attributes = default_runtime_attributes,
-			on_demand_runtime_attributes = on_demand_runtime_attributes
+			default_runtime_attributes = default_runtime_attributes
 	}
 
 	scatter (aln in assemble_genome.alignments) {
@@ -88,6 +84,5 @@ workflow de_novo_assembly_sample {
 		sample: {help: "Sample information and associated data files"}
 		references: {help: "Array of Reference genomes data"}
 		default_runtime_attributes: {help: "Default RuntimeAttributes; spot if preemptible was set to true, otherwise on_demand"}
-		on_demand_runtime_attributes: {help: "RuntimeAttributes for tasks that require dedicated instances"}
 	}
 }
